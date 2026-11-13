@@ -41,3 +41,7 @@
  건설 장비:  건설 후 발동하면 출발지로 이동하고 내 소유의 건물 중 추가 건설하도록 했습니다.   
 
  힐링 여행권:  상대 땅에서 발동하면 통행료를 면제 받고 기차 여행 타일로 이동 후 원하는 목적지를 선택하도록 했습니다.
+
+
+<img src="./readme-media/02-train-travel.gif" alt="첫 주사위와 말 이동" width="600">
+<img src="./readme-media/03-item-and-acquisition.gif" alt="첫 주사위와 말 이동" width="600">
