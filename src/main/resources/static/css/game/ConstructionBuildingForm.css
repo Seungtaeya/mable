@@ -1,0 +1,331 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 6px;
+    background: #594029;
+    color: #483215;
+    font: 14px/1.4 "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+main {
+    display: grid;
+    gap: 6px;
+    width: min(100%, 380px);
+    margin: 0 auto;
+    padding: 8px;
+
+    border: 4px solid #8a5a35;
+    border-radius: 10px;
+    background: #f5eed9;
+    box-shadow: inset 0 0 0 2px #fff9e6, 0 2px 6px #23160b66;
+}
+
+main > h2 {
+    margin: 0;
+    font-size: 15px;
+    text-align: center;
+}
+
+/* 현재 HTML의 기본 선택 목록 */
+#building {
+    width: 100%;
+    min-height: 106px;
+    padding: 4px;
+    border: 1px solid #b28a55;
+    border-radius: 7px;
+    color: inherit;
+    background: #fff9e8;
+    font: inherit;
+}
+
+#building option {
+    padding: 3px 6px;
+}
+
+#building[hidden] {
+    display: none;
+}
+
+/* 비용과 통행료: 기존 label과 span을 사용 */
+main > div:has(> :is(#constructionCost, #constructionCostDiscount, #toll-span)) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 6px;
+    font-weight: 800;
+}
+
+main > div > label {
+    text-align: right;
+}
+
+main > div:has(> #constructionCost) {
+    border-radius: 999px;
+    background: #e4d8b8;
+}
+
+main > div:has(> #constructionCostDiscount) {
+    width: 90%;
+    margin-inline: auto;
+    border-radius: 999px;
+    background: #f3dfa0;
+    font-size: 12px;
+}
+
+#constructionCost,
+#constructionCostDiscount,
+#toll-span {
+    min-width: 0;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+/* 구매 버튼 */
+main > div:has(> #buy) {
+    display: flex;
+    justify-content: center;
+}
+
+#buy {
+    width: min(100%, 200px);
+    min-height: 38px;
+    padding: 5px 10px;
+    border: 2px solid #955522;
+    border-radius: 8px;
+    color: #4d290f;
+    background: linear-gradient(#fff0a2, #ffd568 45%, #ec852c);
+    box-shadow: inset 0 1px 2px #fff7d7, 0 2px 4px #6a471b44;
+    font: inherit;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+#buy:hover:not(:disabled) {
+    filter: brightness(1.07);
+}
+
+#buy:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+#buy:focus-visible,
+#building:focus-visible,
+#buildings .building-card:focus-visible {
+    outline: 2px solid #805221;
+    outline-offset: 2px;
+}
+
+/* JS로 카드를 그릴 때 적용할 스타일 */
+#buildings .building-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+}
+
+#buildings .building-card {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 50px auto;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid #fff6dc;
+    border-radius: 7px;
+    color: inherit;
+    background: transparent;
+    box-shadow: 0 0 0 1px #947447;
+    font: inherit;
+    text-align: center;
+}
+
+#buildings .building-title {
+    padding: 3px 1px;
+    color: #fff9e8;
+    background: linear-gradient(#e1a657, #b97127);
+    font-size: 11px;
+    font-weight: 900;
+}
+
+#buildings .building-card img {
+    display: block;
+    width: 100%;
+    height: 50px;
+    object-fit: contain;
+    background: transparent;
+}
+
+#buildings .building-price {
+    padding: 2px 1px;
+    color: #a93114;
+    background: #fae2aa;
+    font-size: clamp(9px, 3vw, 12px);
+    font-weight: 900;
+    overflow-wrap: anywhere;
+}
+
+#buildings .building-card.is-selected::after {
+    position: absolute;
+    bottom: 18px;
+    left: 4px;
+    content: "✔";
+    color: #c82518;
+    font-size: 18px;
+    text-shadow: 0 1px #fff8e8;
+    pointer-events: none;
+}
+
+/* 인수 팝업에만 적용 */
+body:has(> main > #acquireBtn) {
+    --acquire-width: min(100%, 380px);
+    --acquire-border: #8a5a35;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    min-height: 100vh;
+    margin: 0;
+    padding: 8px;
+
+    color: #483215;
+    background: #594029;
+    font: 14px/1.4 "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+/* 팝업 제목 */
+body:has(> main > #acquireBtn) > h2 {
+    box-sizing: border-box;
+    width: var(--acquire-width);
+    margin: 0;
+    padding: 8px 12px;
+
+    border: 4px solid var(--acquire-border);
+    border-bottom: 0;
+    border-radius: 10px 10px 0 0;
+
+    color: #fff8df;
+    background: linear-gradient(#dfaa62, #ad6b2d);
+
+    font-size: 17px;
+    font-weight: 900;
+    text-align: center;
+    text-shadow: 0 1px #684022;
+}
+
+/* 인수 본문 */
+main:has(> #acquireBtn) {
+    box-sizing: border-box;
+    display: grid;
+    gap: 9px;
+
+    width: var(--acquire-width);
+    margin: 0;
+    padding: 13px 12px 12px;
+
+    border: 4px solid var(--acquire-border);
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+
+    background: #f5eed9;
+    box-shadow: inset 0 0 0 2px #fff9e6, 0 2px 6px #23160b66;
+}
+
+main:has(> #acquireBtn) > div:has(> #tileName) {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+}
+
+main:has(> #acquireBtn) #tileName {
+    font-size: 17px;
+    font-weight: 900;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+/* 2배 지불 안내 */
+main:has(> #acquireBtn) #tileName + span {
+    padding: 3px 10px;
+
+    border: 1px solid #e2b569;
+    border-radius: 6px;
+
+    color: #952c19;
+    background: #ffe3aa;
+
+    font-size: 12px;
+    font-weight: 900;
+    text-align: center;
+}
+
+/* 인수 비용과 할인 */
+main:has(> #acquireBtn) #acquire {
+    display: grid;
+    gap: 5px;
+}
+
+main:has(> #acquireBtn) #acquire:empty {
+    display: none;
+}
+
+main:has(> #acquireBtn) #acquire > span {
+    display: block;
+    padding: 4px 10px;
+
+    border-radius: 999px;
+    background: #e4d8b8;
+
+    font-weight: 800;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+main:has(> #acquireBtn) #acquire > span + span {
+    width: 90%;
+    margin-inline: auto;
+
+    color: #80491c;
+    background: #f3dfa0;
+}
+
+/* 인수 버튼: 할인 후 결제액 표시 */
+main:has(> #acquireBtn) > #acquireBtn {
+    justify-self: center;
+
+    width: min(100%, 220px);
+    min-height: 39px;
+    padding: 5px 10px;
+
+    border: 2px solid #955522;
+    border-radius: 8px;
+
+    color: #4d290f;
+    background: linear-gradient(#fff0a2, #ffd568 45%, #ec852c);
+    box-shadow: inset 0 1px 2px #fff7d7, 0 2px 4px #6a471b44;
+
+    font: inherit;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+}
+
+main:has(> #acquireBtn) > #acquireBtn:hover:not(:disabled) {
+    filter: brightness(1.07);
+}
+
+main:has(> #acquireBtn) > #acquireBtn:focus-visible {
+    outline: 2px solid #805221;
+    outline-offset: 2px;
+}
+
+main:has(> #acquireBtn) > #acquireBtn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/room/createRoomForm.css}">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>방 만들기</title>
+</head>
+<body>
+<header>
+    <h2>방 만들기</h2>
+</header>
+
+<main>
+    <div>
+        <label for="title">방 이름</label>
+        <input type="text" name="title" id="title" placeholder="방제를 입력하세요">
+        <label>인원수</label>
+        <select name="maxPlayers" id="max_players">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+    </div>
+
+    <button type="button" id="sendCreateRoom_btn">방 만들기</button>
+</main>
+
+<script>
+    const sendCreateRoom = document.getElementById("sendCreateRoom_btn");
+    const roomTitle = document.getElementById("title");
+    const roomMaxPlayers = document.getElementById("max_players");
+
+    const csrfToken =
+        document.querySelector('meta[name="_csrf"]').content;
+
+    const csrfHeader =
+        document.querySelector('meta[name="_csrf_header"]').content;
+
+
+    sendCreateRoom.addEventListener("click", () => {
+        console.log("SendCreateRoomBtn Click");
+        sendCreateRoom_Function();
+    });
+
+
+    async function sendCreateRoom_Function() {
+        const data = {
+            title: roomTitle.value,
+            maxPlayers:roomMaxPlayers.value
+        };
+
+        if(!data.title) {
+            alert("방 이름을 입력해주세요.");
+            roomTitle.focus();
+            return;
+        }
+
+        sendCreateRoom.disabled = true;
+        sendCreateRoom.textContent = "생성 중...";
+
+        try {
+            const response = await fetch("/api/rooms", {
+                method: "POST",
+                headers: {"Content-Type": "application/json",
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify(data)
+            });
+
+            if(!response.ok) {
+                throw new Error("방 생성에 실패했습니다.");
+            }
+
+            const roomId = await response.json();
+
+            if(window.opener && !window.opener.closed) {
+                window.opener.location.href = `/rooms/${roomId}`;
+                window.close();
+            } else {
+
+                window.location.href = `/rooms/${roomId}`;
+
+            }
+        } catch (error) {
+            alert(error.message);
+            sendCreateRoom.disabled = false;
+            sendCreateRoom.textContent = '방 만들기';
+        }
+    }
+</script>
+</body>
+</html>

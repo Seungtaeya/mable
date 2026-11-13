@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스킬 추가 건설</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            color: #3b2c19;
+            background: #f5eddb;
+            font-family: system-ui, sans-serif;
+        }
+
+        main {
+            padding: 20px;
+            border: 1px solid #dec59a;
+            border-radius: 16px;
+            background: #fffaf0;
+        }
+
+        h1 { margin: 0 0 6px; font-size: 22px; }
+        p { margin: 8px 0; }
+
+        .building-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+            gap: 10px;
+            margin: 18px 0;
+        }
+
+        .building-option {
+            display: grid;
+            justify-items: center;
+            gap: 8px;
+            padding: 12px;
+            border: 2px solid #e2cda4;
+            border-radius: 12px;
+            background: #fffdf7;
+            cursor: pointer;
+        }
+
+        .building-option:has(input:checked) {
+            border-color: #ae721d;
+            background: #ffedb8;
+        }
+
+        .building-option img {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        button { padding: 8px 14px; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>스킬 추가 건설</h1>
+    <p th:text="|${tileId}번 타일에 추가할 건물을 선택하세요.|"></p>
+
+    <form id="skill-build-form"
+          th:attr="data-game-id=${gameId},data-tile-id=${tileId}, data-player-id=${playerId}">
+
+        <div class="building-options">
+            <label class="building-option" th:if="${HOUSE != null}">
+                <img th:src="@{/image/house.png}" alt="">
+                <strong>주택</strong>
+                <input type="checkbox" name="buildingTypes" th:value="${HOUSE}">
+            </label>
+
+            <label class="building-option" th:if="${VILLA != null}">
+                <img th:src="@{/image/villa.png}" alt="">
+                <strong>빌라</strong>
+                <input type="checkbox" name="buildingTypes" th:value="${VILLA}">
+            </label>
+
+            <label class="building-option" th:if="${APARTMENT != null}">
+                <img th:src="@{/image/apartment.png}" alt="">
+                <strong>아파트</strong>
+                <input type="checkbox" name="buildingTypes" th:value="${APARTMENT}">
+            </label>
+
+            <label class="building-option" th:if="${LANDMARK != null}">
+                <img th:src="@{/image/landmark.png}" alt="">
+                <strong>랜드마크</strong>
+                <input type="checkbox" name="buildingTypes" th:value="${LANDMARK}">
+            </label>
+        </div>
+
+        <p th:if="${HOUSE == null and VILLA == null and APARTMENT == null and LANDMARK == null}">
+            이 타일에는 추가로 지을 수 있는 건물이 없어요.
+        </p>
+
+        <div class="actions">
+            <button type="button" id="close-popup">닫기</button>
+            <button type="submit" id="confirm-build" disabled>추가 건설하기</button>
+        </div>
+
+        <p id="build-status" role="status"></p>
+    </form>
+</main>
+
+<script>
+    const form = document.getElementById("skill-build-form");
+    const confirmButton = document.getElementById("confirm-build");
+    const messageBox = document.getElementById("build-status");
+    let submitted = false;
+
+    form.addEventListener("change", () => {
+        confirmButton.disabled = submitted || !form.querySelector("input:checked");
+    });
+
+    document.getElementById("close-popup").addEventListener("click", () => {
+        window.close();
+    });
+
+    form.addEventListener("submit", event => {
+        event.preventDefault();
+        if (submitted) return;
+
+        const buildingTypes = new FormData(form).getAll("buildingTypes");
+        if (buildingTypes.length === 0) return;
+
+        if (!window.opener || window.opener.closed) {
+            messageBox.textContent = "게임 창을 찾을 수 없어요.";
+            return;
+        }
+
+        submitted = true;
+        confirmButton.disabled = true;
+        const levelByType = {
+            HOUSE: 1,
+            VILLA: 2,
+            APARTMENT: 3,
+            LANDMARK: 4
+        };
+
+        const buildingLevels = buildingTypes.map(type => levelByType[type]);
+
+        window.opener.postMessage({
+            type: "SKILL_BUILD_PURCHASE_REQUEST",
+            gameId: Number(form.dataset.gameId),
+            tileId: Number(form.dataset.tileId),
+            playerId: Number(form.dataset.playerId),
+            buildingLevels
+        }, window.location.origin);
+
+        messageBox.textContent = "추가 건설을 요청했어요.";
+    });
+</script>
+</body>
+</html>

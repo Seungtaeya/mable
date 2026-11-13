@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.3.0/bundles/stomp.umd.min.js"></script>
+    <script th:src="@{/js/game/game.js}" defer></script>
+    <script th:src="@{/js/websocket/gameWebsocket.js}" defer></script>
+    <link rel="stylesheet" href="/css/game/game.css">
+    <link rel="stylesheet" href="/css/game/player.css">
+
+    <style>
+        .dice-controls {
+            position: relative;
+        }
+
+        #dice-aim {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+
+            width: max(120px, 100%);
+            padding: 8px;
+            border-radius: 10px;
+            color: #fff;
+            background: #223746;
+            text-align: center;
+        }
+
+        #dice-aim-bar {
+            display: block;
+            width: 100%;
+            margin-top: 4px;
+            accent-color: #ffca49;
+        }
+
+        #roll-dice-btn {
+            touch-action: none;
+        }
+
+        #roll-dice-btn[hidden] + #dice-aim {
+            display: none;
+        }
+    </style>
+</head>
+<body th:attr="data-game-id = ${gameId}, data-user-id = ${userId}" >
+<button type="button" id="lobbyBtn" >로비로</button>
+<main id="game-screen">
+    <div class="board-viewport">
+        <div class="board-stage">
+            <div id="train-travel-prompt" role="status" hidden></div>
+            <div id="trap-notice" role="status" hidden="hidden">
+                함정 타일을 밟았습니다. 무작위 타일로 이동합니다.
+            </div>
+            <ul id="tiles"></ul>
+            <div id="building-layer"></div>
+            <div id="piece-layer"></div>
+            <div id="dice-area">
+                <div id="dice-result" hidden="hidden">
+                    <div id="dice1" class="dice"></div>
+                    <div id="dice2" class="dice"></div>
+                </div>
+                <div class="dice-controls">
+                    <button type="button" id="roll-dice-btn" hidden="hidden">주사위 던지기</button>
+
+                    <div id="dice-aim" hidden>
+                        목표 합계: <strong id="dice-aim-value">2</strong>
+                        <progress id="dice-aim-bar" max="10" value="0" aria-label="목표 주사위 합계 게이지"></progress>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="gameResult" hidden="hidden"></div>
+
+    <div id="turnOrderButtons">
+    <h1>선 정하기</h1>
+    </div>
+
+    <div id="activationItem">
+        <ul id="activatedItems"></ul>
+    </div>
+
+    <div id="players">
+        <ul id="player-Card"></ul>
+    </div>
+</main>
+
+</body>
+</html>

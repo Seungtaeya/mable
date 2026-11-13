@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/character/characterInfo.css}">
+    <script th:src="@{/js/character/characterInfo.js}" defer></script>
+    <title>캐릭터 정보</title>
+</head>
+<body>
+    <input type="hidden" th:value="${characterId}" id="characterId">
+    <input type="hidden" th:value="${idx}" id="idx">
+    <div id="info">
+        <div id="character" class="character"></div>
+        <div id="status" class="status"></div>
+        <div id="character-luckyItem" class="character-luckyItem"></div>
+        <div id="skill" class="skill"></div>
+    </div>
+
+    <div>
+        <button id="useBtn">사용하기</button>
+    </div>
+</body>
+</html>

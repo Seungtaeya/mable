@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/character/drawCards.css}">
+    <script th:src="@{/js/character/drawCard.js}" defer></script>
+    <title>캐릭터 뽑기</title>
+</head>
+<body>
+<nav>
+    <h2>캐릭터 카드</h2>
+    <button type="button" id="homeBtn"><img src="/image/homeIcon.png" alt="홈"></button>
+</nav>
+<main>
+    <div id="cardPackList">
+        <div id="premiumPack10">
+            <img src="/image/premiumCardPack10.png" alt="프리미엄 카드팩10" >
+        </div>
+        <div id="premiumPack30">
+            <img src="/image/premiumCardPack30.png" alt="프리미엄 카드팩30">
+        </div>
+    </div>
+
+    <div id="renderCards" hidden="hidden"></div>
+</main>
+
+</body>
+</html>

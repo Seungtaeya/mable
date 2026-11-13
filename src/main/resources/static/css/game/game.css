@@ -1,0 +1,1050 @@
+:root {
+    --page-text: #253e38;
+    --lake-light: #5b9aa3;
+    --lake-dark: #315d75;
+    --gold: #ebca77;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+
+    color: var(--page-text);
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background:
+            radial-gradient(ellipse at 50% 36%, #f8fff3, transparent 65%),
+            #e8f1e2;
+}
+
+button {
+    font: inherit;
+}
+
+button:focus-visible {
+    outline: 3px solid #ffc84d;
+    outline-offset: 4px;
+}
+
+#lobbyBtn {
+    position: relative;
+    z-index: 12;
+
+    margin: 12px 0 0 14px;
+    padding: 9px 17px;
+
+    border: 1px solid #bdd0bd;
+    border-radius: 9px;
+
+    color: #34544b;
+    background: #fafff7;
+    box-shadow: 0 3px 8px #2c534421;
+
+    font-weight: 800;
+    cursor: pointer;
+}
+
+#lobbyBtn:hover {
+    background: #e0f2df;
+}
+
+#game-screen {
+    position: relative;
+    display: grid;
+    align-content: center;
+
+    min-height: calc(100dvh - 58px);
+    padding: 12px clamp(8px, 2vw, 28px) 22px;
+}
+
+.board-viewport {
+    min-width: 0;
+}
+
+.board-stage {
+    --board-size: min(66vw, 76dvh, 820px);
+
+    position: relative;
+
+    width: 100%;
+    min-height: calc(var(--board-size) * 0.88 + 38px);
+    margin: 0 auto;
+}
+
+/* 보드판: 게임 로직의 row / column 배치를 그대로 사용 */
+#tiles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    display: grid;
+    grid-template-columns: 1.25fr repeat(7, minmax(0, 1fr)) 1.25fr;
+    grid-template-rows: 1.25fr repeat(7, minmax(0, 1fr)) 1.25fr;
+    gap: clamp(1px, 0.22vw, 3px);
+
+    width: var(--board-size);
+    aspect-ratio: 1;
+    margin: 0;
+    padding: clamp(3px, 0.6vw, 8px);
+
+    transform: translate(-50%, -50%) scaleY(0.62) rotate(45deg);
+
+    border: clamp(2px, 0.4vw, 5px) solid #d8ca94;
+    border-radius: 10px;
+
+    background: #77896b;
+    box-shadow:
+            7px 7px 0 #7c7a50,
+            13px 13px 0 #535d3c,
+            22px 22px 26px #25453a4d;
+
+    list-style: none;
+}
+
+/* 보드 중앙 연못 */
+#tiles::before {
+    grid-area: 2 / 2 / 9 / 9;
+
+    content: "";
+
+    border: 4px solid #90a875;
+    border-radius: 5px;
+
+    background:
+            radial-gradient(ellipse at 16% 23%, #8ba77b 0 5%, transparent 5.5%),
+            radial-gradient(ellipse at 78% 76%, #809e76 0 6%, transparent 6.5%),
+            repeating-radial-gradient(
+                    ellipse at center,
+                    transparent 0 22px,
+                    #ffffff0c 23px 25px
+            ),
+            linear-gradient(135deg, var(--lake-light), var(--lake-dark));
+
+    box-shadow: inset 0 0 30px #173d5459;
+    pointer-events: none;
+}
+
+.board-tile {
+    position: relative;
+
+    display: grid;
+    place-items: center;
+
+    min-width: 0;
+    min-height: 0;
+    padding: 2px;
+    overflow: hidden;
+
+    border: 1px solid #ffffffb3;
+    border-radius: 4px;
+
+    color: #243947;
+    background: #f5f1df;
+    box-shadow: inset -2px -2px 0 #233c4322;
+
+    font-size: clamp(8px, 1.1vw, 15px);
+    font-weight: 850;
+    line-height: 1.15;
+    text-align: center;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+}
+
+.board-tile::before {
+    position: absolute;
+    top: 1px;
+    left: 3px;
+
+    content: attr(data-path-index);
+
+    font-size: clamp(5px, 0.6vw, 9px);
+    font-weight: 600;
+    opacity: 0.65;
+}
+
+/* 도시 그룹 색상 */
+.board-tile[data-group-code="LIGHT_GREEN"] { background: #b5d953; }
+.board-tile[data-group-code="DARK_GREEN"]  { background: #428e36; color: #fff; }
+.board-tile[data-group-code="LIGHT_BLUE"] { background: #65c6df; }
+.board-tile[data-group-code="DARK_BLUE"]  { background: #388bbb; color: #fff; }
+.board-tile[data-group-code="PINK"]       { background: #e9a3ca; }
+.board-tile[data-group-code="PURPLE"]     { background: #9770c4; color: #fff; }
+.board-tile[data-group-code="ORANGE"]     { background: #f3aa32; }
+.board-tile[data-group-code="RED"]        { background: #df573e; color: #fff; }
+
+/* 특수 타일 */
+.board-tile[data-tile-type="EVENT"] {
+    color: #57707d;
+    background: repeating-linear-gradient(45deg, #f5f5e9 0 8px, #e5eadd 8px 10px);
+}
+
+.board-tile[data-tile-type="TOURIST_SPOT"] {
+    color: #26645e;
+    background: #c4f0e8;
+}
+
+.board-tile:is(
+    [data-tile-type="PRISON"],
+    [data-tile-type="EXPO"],
+    [data-tile-type="TRAIN"]
+) {
+    color: #365b67;
+    background: linear-gradient(135deg, #f6fff1, #b9dae0);
+}
+
+.board-tile[data-tile-type="START"] {
+    color: #715725;
+    background: linear-gradient(135deg, #fff7d2, #f2d584);
+}
+
+/* 주사위 버튼은 보드와 함께 회전하지 않음 */
+#dice-area {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+
+    display: grid;
+    place-items: center;
+
+    pointer-events: none;
+}
+
+#roll-dice-btn {
+    padding: clamp(8px, 1.1vw, 15px) clamp(12px, 2.1vw, 30px);
+
+    border: 2px solid #fff1ae;
+    border-radius: 14px;
+
+    color: #ffffff;
+    background: linear-gradient(145deg, #22abd4, #125a89);
+    box-shadow:
+            inset 0 1px 2px #ffffff55,
+            0 5px 0 #10436a,
+            0 10px 18px #153e5966;
+
+    font-size: clamp(12px, 1.45vw, 19px);
+    font-weight: 900;
+
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+#roll-dice-btn:not(:disabled):hover {
+    filter: brightness(1.1);
+}
+
+#roll-dice-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* 선 정하기 화면 */
+#turnOrderButtons {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: clamp(12px, 2.5vw, 32px);
+
+    padding: 24px;
+    overflow: auto;
+
+    background: radial-gradient(circle at center, #263c4c88, #101b26e8);
+    backdrop-filter: blur(3px);
+}
+
+#turnOrderButtons[hidden] {
+    display: none;
+}
+
+#turnOrderButtons > h1 {
+    flex: 0 0 min(100%, 740px);
+
+    margin: 0 max(0px, calc((100% - 740px) / 2));
+    padding: 16px;
+
+    border: 1px solid #ffffff36;
+    border-radius: 14px;
+
+    color: #fff7dd;
+    background: #17202ce8;
+
+    font-size: clamp(25px, 5vw, 53px);
+    text-align: center;
+}
+
+#turnOrderButtons > h1::after {
+    display: block;
+    margin-top: 6px;
+
+    content: "카드를 선택하세요";
+
+    color: #dce7f2;
+    font-size: clamp(13px, 2vw, 20px);
+    font-weight: 700;
+}
+
+.turnOrderButton {
+    position: relative;
+
+    display: grid;
+    width: clamp(108px, 17vw, 190px);
+    aspect-ratio: 0.72;
+    padding: 8px;
+    place-items: center;
+
+    border: 5px solid #fff8e9;
+    border-radius: 14px;
+
+    color: #773b49;
+    background:
+            repeating-conic-gradient(from 10deg, #f2b6af 0deg 14deg, #fbe0d5 14deg 28deg);
+
+    box-shadow:
+            inset 0 0 0 2px #ad6c72,
+            0 6px 0 #733c46,
+            0 12px 20px #00000055;
+
+    cursor: pointer;
+    transition: transform 160ms ease, filter 160ms ease;
+}
+
+.turnOrderButton::before {
+    width: 100%;
+    padding: 8px 0;
+
+    content: "FORTUNE\A CARD";
+
+    border-block: 2px solid #fff5e6;
+
+    background: #fff0e3c9;
+    font: 900 clamp(15px, 2.4vw, 30px) / 1 Georgia, serif;
+    text-align: center;
+    white-space: pre-line;
+}
+
+.turnOrderButton:not(:disabled):hover {
+    transform: translateY(-6px);
+}
+
+.turnOrderButton:disabled {
+    filter: grayscale(0.85) brightness(0.72);
+    cursor: default;
+}
+
+.turnOrderButton .selection-check {
+    position: absolute;
+    inset: 0;
+
+    display: grid;
+    place-items: center;
+
+    color: #30d5ff;
+    font-size: clamp(50px, 8vw, 95px);
+    font-weight: 900;
+    text-shadow: 0 3px 4px #063e5b;
+
+    opacity: 0;
+    pointer-events: none;
+}
+
+.turnOrderButton.is-selected {
+    border-color: #45d8ff;
+    filter: none;
+}
+
+.turnOrderButton.is-selected .selection-check {
+    opacity: 1;
+}
+
+.turnOrderButton:is(.is-other-selected, .is-other-selection) .selection-check {
+    color: #e0e0e0;
+    opacity: 1;
+}
+
+.turnOrderButton.first-turn {
+    border-color: #ffdc52;
+    filter: none;
+    box-shadow: 0 0 0 3px #fff5bd, 0 0 36px #ffc32d;
+}
+
+@media (max-width: 760px) {
+    #game-screen {
+        align-content: start;
+    }
+
+    .board-tile {
+        font-size: clamp(7px, 1.45vw, 11px);
+    }
+}
+
+@media (max-width: 540px) {
+    #turnOrderButtons {
+        padding: 16px;
+    }
+
+    .turnOrderButton {
+        width: min(36vw, 185px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .turnOrderButton {
+        transition: none;
+    }
+}
+
+/* 기존 .board-stage의 position: relative는 유지 */
+#piece-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none; /* 주사위 버튼 클릭을 가로막지 않음 */
+}
+
+#piece-layer .player-piece {
+    position: absolute;
+    width: clamp(32px, 5vw, 64px);
+    height: auto;
+    transform: translate(-50%, -100%);
+}
+
+/* 요약 카드와 같은 플레이어 색 */
+#piece-layer > .player-piece {
+    --piece-color: #b6c2cc;
+    isolation: isolate;
+}
+
+#piece-layer > .player-piece[data-turn-order="0"] { --piece-color: #60b7ee; }
+#piece-layer > .player-piece[data-turn-order="1"] { --piece-color: #f29583; }
+#piece-layer > .player-piece[data-turn-order="2"] { --piece-color: #b69aef; }
+#piece-layer > .player-piece[data-turn-order="3"] { --piece-color: #7fd39c; }
+
+/* 캐릭터 발밑에 깔리는 타원형 받침 */
+#piece-layer > .player-piece::before {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    z-index: -1;
+
+    width: 85%;
+    height: 10px;
+    transform: translate(-50%, 45%);
+
+    content: "";
+    border: 1px solid #ffffffb3;
+    border-radius: 50%;
+    background: var(--piece-color);
+    box-shadow: 0 2px 3px #00000055;
+}
+
+/* 평소에는 모든 캐릭터가 선명하게 */
+#piece-layer > .player-piece > img {
+    opacity: 1;
+    transition: opacity 180ms ease;
+}
+
+/* 내 턴에는 다른 캐릭터의 이미지만 흐리게 */
+#piece-layer.is-my-turn > .player-piece:not(.is-mine) > img {
+    opacity: 0.35;
+}
+
+/* 겹칠 때 내 말을 앞쪽에 표시 */
+#piece-layer.is-my-turn > .player-piece.is-mine {
+    z-index: 1;
+}
+
+/* ========================= */
+
+.board-stage {
+    position: relative;
+}
+
+/* 캐릭터 말 레이어와 별개로, 회전한 #tiles 밖에 둔다. */
+#building-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    --building-unit: 1px;
+}
+
+#building-layer .building-group {
+    position: absolute;
+    display: block;
+    transform: none;
+}
+
+#building-layer .building-group > .building {
+    position: absolute;
+    display: block;
+    isolation: isolate;
+
+    width: calc(var(--width) * var(--building-unit));
+    height: calc(var(--height) * var(--building-unit));
+
+    /* JS 좌표에 건물의 아래쪽 가운데를 맞춘다. */
+    transform: translate(-50%, -100%);
+    filter: drop-shadow(1px 2px 1px #26332966);
+}
+
+#building-layer .building::before,
+#building-layer .building::after {
+    position: absolute;
+    content: "";
+}
+
+/* 소유자 색 받침 */
+#building-layer .building-owner-base {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    z-index: -1;
+
+    width: 105%;
+    height: max(3px, calc(5 * var(--building-unit)));
+
+    transform: translate(-50%, 45%);
+
+    border: 1px solid #ffffff99;
+    border-radius: 50%;
+    background: var(--property-owner-color, #b6c2cc);
+}
+
+/* 깃발 */
+#building-layer .building.flag {
+    --width: 22;
+    --height: 27;
+}
+
+#building-layer .building.flag::before {
+    inset: 0 auto 0 20%;
+    width: 14%;
+
+    border-radius: 999px;
+    background: linear-gradient(90deg, #fff1ba, #bd843e);
+}
+
+#building-layer .building.flag::after {
+    inset: 10% 0 auto 30%;
+    height: 49%;
+
+    clip-path: polygon(0 0, 100% 10%, 75% 50%, 100% 90%, 0 100%);
+    background: var(--property-owner-color, #b6c2cc);
+}
+
+/* 주택 */
+#building-layer .building.house {
+    --width: 22;
+    --height: 22;
+}
+
+#building-layer .building.house::before {
+    inset: 35% 12% 0;
+
+    background:
+            linear-gradient(#845437, #633c29) 68% 100% / 22% 50% no-repeat,
+            linear-gradient(#a8d8ee, #5892ae) 17% 36% / 26% 31% no-repeat,
+            linear-gradient(90deg, #fff1cc 0 77%, #cfab7e 77%);
+}
+
+#building-layer .building.house::after {
+    inset: 0 0 auto;
+    height: 45%;
+
+    clip-path: polygon(45% 0, 62% 0, 100% 84%, 88% 100%, 0 100%);
+    background: linear-gradient(120deg, #78b98f, #28634b);
+}
+
+/* 빌라 */
+#building-layer .building.villa {
+    --width: 23;
+    --height: 30;
+}
+
+#building-layer .building.villa::before {
+    inset: 22% 9% 0;
+
+    background:
+            linear-gradient(90deg, #9ccfe5 0 38%, #edc6a3 38% 62%, #9ccfe5 62%)
+            50% 20% / 63% 21% no-repeat,
+            linear-gradient(90deg, #87bfd7 0 38%, #edc6a3 38% 62%, #87bfd7 62%)
+            50% 65% / 63% 21% no-repeat,
+            linear-gradient(90deg, #f5d2af 0 77%, #c39472 77%);
+}
+
+#building-layer .building.villa::after {
+    inset: 0 0 auto;
+    height: 31%;
+
+    clip-path: polygon(20% 0, 74% 0, 100% 80%, 89% 100%, 0 100%);
+    background: linear-gradient(145deg, #ed9669, #ab4d36);
+}
+
+/* 아파트 */
+#building-layer .building.apartment {
+    --width: 22;
+    --height: 40;
+}
+
+#building-layer .building.apartment::before {
+    inset: 12% 9% 0;
+
+    background:
+            repeating-linear-gradient(
+                    to bottom,
+                    transparent 0 calc(3 * var(--building-unit)),
+                    #c9bbdf calc(3 * var(--building-unit)) calc(5 * var(--building-unit))
+            ) center 40% / 65% 78% no-repeat,
+            linear-gradient(90deg, #a8d9ed 0 38%, #b9abd0 38% 62%, #a8d9ed 62%)
+            center 40% / 65% 78% no-repeat,
+            linear-gradient(90deg, #e8d9f2 0 76%, #9a86b2 76%);
+}
+
+#building-layer .building.apartment::after {
+    inset: 0 0 auto;
+    height: 18%;
+
+    clip-path: polygon(19% 0, 83% 0, 100% 49%, 81% 100%, 0 100%, 0 49%);
+    background: linear-gradient(145deg, #f0e5ff, #a58ac3);
+}
+
+/* 랜드마크 */
+#building-layer .building.landmark {
+    --width: 36;
+    --height: 47;
+}
+
+#building-layer .building.landmark::before {
+    inset: 0;
+
+    clip-path: polygon(
+            0 100%, 0 48%, 17% 35%, 32% 47%,
+            32% 27%, 40% 21%, 50% 0, 60% 21%,
+            68% 27%, 68% 47%, 83% 35%, 100% 48%, 100% 100%
+    );
+
+    background:
+            linear-gradient(#805222, #805222) 15% 69% / 9% 15% no-repeat,
+            linear-gradient(#805222, #805222) 85% 69% / 9% 15% no-repeat,
+            linear-gradient(#94642b, #94642b) 50% 43% / 9% 17% no-repeat,
+            linear-gradient(100deg, #c99445, #ffe7a0 39%, #efba56 62%, #ad7430);
+}
+
+#building-layer .building.landmark::after {
+    bottom: 0;
+    left: 50%;
+    width: 20%;
+    height: 23%;
+
+    transform: translateX(-50%);
+    border-radius: 999px 999px 0 0;
+    background: #6c4528;
+}
+
+#building-layer .building-owner-line {
+    position: absolute;
+    height: 5px;
+    transform-origin: left center;
+
+    border-radius: 999px;
+    background: var(--property-owner-color, #b6c2cc);
+    box-shadow: 0 0 0 1px #fff9e6, 0 2px 3px #1d334966;
+}
+
+
+
+
+
+
+/* 기존 건물 위치는 건드리지 않고 그 위에 효과만 표시 */
+.building-group > .deed-transfer-fx {
+    position: absolute;
+    inset: 0;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.deed-transfer-fx::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 76%;
+    height: 54%;
+
+    content: "";
+    border: 3px solid var(--property-owner-color, #ffd66b);
+    border-radius: 50%;
+    box-shadow:
+            0 0 16px var(--property-owner-color, #ffd66b),
+            inset 0 0 12px var(--property-owner-color, #ffd66b);
+
+    animation: deed-transfer-ring 800ms ease-out both;
+}
+
+.deed-transfer-badge {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+
+    padding: 5px 12px;
+    border: 2px solid var(--property-owner-color, #ffd66b);
+    border-radius: 999px;
+
+    color: #fff5c7;
+    background: #182a38;
+    box-shadow: 0 4px 12px #0006;
+
+    font-size: clamp(11px, 1.4vw, 16px);
+    font-weight: 900;
+    white-space: nowrap;
+
+    animation: deed-transfer-badge-rise 1050ms ease-out both;
+}
+
+@keyframes deed-transfer-ring {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.65);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.45);
+    }
+}
+
+@keyframes deed-transfer-badge-rise {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -65%) scale(0.8);
+    }
+
+    20%, 70% {
+        opacity: 1;
+        transform: translate(-50%, -110%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -155%) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .deed-transfer-fx::before {
+        display: none;
+    }
+
+    .deed-transfer-badge {
+        animation: none;
+        transform: translate(-50%, -110%);
+    }
+}
+
+/*  ================== */
+
+#dice-result {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 3vw, 24px);
+}
+
+#dice-result[hidden] {
+    display: none;
+}
+
+#dice-result .dice {
+    --dice-size: clamp(46px, 7vw, 68px);
+    --pip-gap: calc(var(--dice-size) * 0.24);
+    --pip-back: calc(0px - var(--pip-gap));
+    --pip-color: #20364a;
+
+    /* 왼쪽 위 + 오른쪽 아래 */
+    --diagonal:
+            var(--pip-back) var(--pip-back) var(--pip-color),
+            var(--pip-gap) var(--pip-gap) var(--pip-color);
+
+    /* 나머지 두 모서리 */
+    --corners:
+            var(--diagonal),
+            var(--pip-gap) var(--pip-back) var(--pip-color),
+            var(--pip-back) var(--pip-gap) var(--pip-color);
+
+    position: relative;
+    box-sizing: border-box;
+    width: var(--dice-size);
+    aspect-ratio: 1;
+    border: 1px solid #fffdf4;
+    border-radius: 22%;
+    background: linear-gradient(145deg, #fffef7, #e8dcc0);
+    box-shadow: 0 4px 0 #b5a17b, 0 8px 12px #142b4360;
+}
+
+#dice-result .dice::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--dice-size) * 0.15);
+    aspect-ratio: 1;
+    content: "";
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#dice-result .dice:is([data-face="1"], [data-face="3"], [data-face="5"])::before {
+    background: var(--pip-color);
+}
+
+#dice-result .dice[data-face="1"]::before {
+    background: #bc4437;
+}
+
+#dice-result .dice:is([data-face="2"], [data-face="3"])::before {
+    box-shadow: var(--diagonal);
+}
+
+#dice-result .dice:is([data-face="4"], [data-face="5"])::before {
+    box-shadow: var(--corners);
+}
+
+#dice-result .dice[data-face="6"]::before {
+    box-shadow:
+            var(--corners),
+            var(--pip-back) 0 var(--pip-color),
+            var(--pip-gap) 0 var(--pip-color);
+}
+
+/* 나중에 굴리는 동안에만 붙일 클래스 */
+#dice-result .dice.is-rolling {
+    animation: game-dice-roll 600ms ease-in-out;
+}
+
+#dice-result #dice2.is-rolling {
+    animation-duration: 760ms;
+    animation-direction: reverse;
+}
+
+@keyframes game-dice-roll {
+    0%   { transform: translateY(0) rotate(0); }
+    35%  { transform: translateY(-24px) rotate(140deg); }
+    62%  { transform: translateY(0) rotate(250deg); }
+    80%  { transform: translateY(-9px) rotate(310deg); }
+    100% { transform: translateY(0) rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #dice-result .dice.is-rolling {
+        animation: none;
+    }
+}
+#piece-layer > .player-piece.is-stepping {
+    transition: none;
+}
+
+#tiles .board-tile.is-build-target {
+    z-index: 2;
+    cursor: pointer;
+    outline: 2px solid #fff0a0;
+    outline-offset: -2px;
+    filter: brightness(1.12);
+    box-shadow:
+            inset 0 0 12px #fff0a080,
+            0 0 14px #ffc84ecc;
+}
+
+#tiles .board-tile.is-build-target:hover {
+    z-index: 3;
+    filter: brightness(1.25);
+    box-shadow:
+            inset 0 0 16px #fff0a0b3,
+            0 0 22px #ffc84e;
+}
+
+#train-travel-prompt {
+    position: fixed;
+    top: 68px;
+    left: 50%;
+    z-index: 30;
+    transform: translateX(-50%);
+
+    padding: 9px 16px;
+    border: 1px solid #82eadb;
+    border-radius: 999px;
+    color: #eafffa;
+    background: #164943;
+    box-shadow: 0 4px 14px #143f4050;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+#tiles .board-tile.is-train-travel-target {
+    z-index: 2;
+    cursor: pointer;
+    outline: 2px solid #bbfff1;
+    outline-offset: -2px;
+    box-shadow: inset 0 0 12px #a4ffe2a0, 0 0 14px #39dac8bb;
+}
+
+#tiles .board-tile.is-train-travel-target:hover {
+    z-index: 3;
+    filter: brightness(1.2);
+    box-shadow: inset 0 0 16px #baffedd0, 0 0 22px #39dac8;
+}
+
+#trap-notice {
+    position: fixed;
+    top: 68px;
+    left: 50%;
+    z-index: 40;
+    transform: translateX(-50%);
+
+    box-sizing: border-box;
+    width: max-content;
+    max-width: calc(100% - 32px);
+    padding: 12px 20px;
+
+    border: 2px solid #ffc879;
+    border-radius: 12px;
+    background: #612824;
+    color: #fff8e8;
+    box-shadow: 0 5px 18px #32140d55;
+
+    font-size: clamp(15px, 2vw, 19px);
+    font-weight: 800;
+    line-height: 1.5;
+    text-align: center;
+    word-break: keep-all;
+
+    pointer-events: none;
+}
+
+#trap-notice[hidden] {
+    display: none;
+}
+
+#gameResult[hidden] {
+    display: none;
+}
+
+/* 결과창이 열려 있을 때만 배경을 어둡게 */
+body:has(#gameResult:not([hidden]))::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(8, 17, 29, 0.72);
+}
+
+#gameResult.game-result:not([hidden]) {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1000;
+    transform: translate(-50%, -50%);
+
+    display: grid;
+    gap: 10px;
+    box-sizing: border-box;
+    width: min(420px, calc(100% - 32px));
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    padding: clamp(18px, 5vw, 30px);
+
+    color: #f7f3e5;
+    background: linear-gradient(155deg, #23384c, #111c2a);
+    border: 2px solid #d8b768;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+
+    animation: game-result-enter 220ms ease-out both;
+}
+
+#gameResult > h3 {
+    margin: 0 0 8px;
+    color: #ffe39a;
+    text-align: center;
+    font-size: clamp(22px, 5vw, 28px);
+}
+
+#gameResult > span {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+
+    padding: 11px 13px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.07);
+
+    text-align: right;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+#gameResult > span::before {
+    color: #c5d1dc;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+#gameResult > span:nth-of-type(1)::before { content: "승자"; }
+#gameResult > span:nth-of-type(2)::before { content: "순위"; }
+#gameResult > span:nth-of-type(3)::before { content: "보유금"; }
+#gameResult > span:nth-of-type(4)::before { content: "종료 사유"; }
+
+#gameResult > span:nth-of-type(1) {
+    color: #ffe39a;
+    background: rgba(255, 211, 109, 0.12);
+    font-size: 18px;
+}
+
+#gameResult > button {
+    min-height: 44px;
+    margin-top: 8px;
+    padding: 12px 18px;
+
+    color: #35240c;
+    background: linear-gradient(#ffe6a1, #e8b649);
+    border: 1px solid #ffdf8c;
+    border-radius: 10px;
+
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+#gameResult > button:hover {
+    background: #ffe39a;
+}
+
+#gameResult > button:focus-visible {
+    outline: 2px solid #fff5d6;
+    outline-offset: 4px;
+}
+
+@keyframes game-result-enter {
+    from {
+        opacity: 0;
+        transform: translate(-50%, calc(-50% + 12px));
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #gameResult.game-result:not([hidden]) {
+        animation: none;
+    }
+}

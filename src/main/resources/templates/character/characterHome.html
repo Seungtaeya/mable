@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/character/characters.css}">
+    <script th:src="@{/js/character/charater.js}" defer></script>
+    <title>캐릭터</title>
+</head>
+<body>
+    <nav>
+        <h2>캐릭터 카드</h2>
+        <h2 id="character-synthesis">합성</h2>
+    </nav>
+<main>
+    <div id="selectedCard">
+        <div id="lucky-items"></div>
+        <div id="character-card"></div>
+        <div id="character-skill"></div>
+        <div id="character-info"></div>
+    </div>
+
+    <div id="owned-cards">
+        <select name="select">
+            <option>등급순</option>
+            <option>이름순</option>
+        </select>
+        <button>판매</button>
+        <button id="drawCards" type="button">카드 뽑기</button>
+        <span id="count"></span>
+        <div id="user-cards" class="cards"></div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/LuckyItem/drawLuckyItem.css}">
+    <title>아이템 정보</title>
+</head>
+<body th:data-item-id="${ownedItemId}">
+<nav>
+    <a th:href="@{/lobby}"><h2>아이템 정보</h2></a>
+</nav>
+<main>
+    <div>
+        <div id="lucky-item">
+            <img th:src="${info.getImagePath()}" alt="아이템 정보" >
+
+            <span th:text="${info.getItemName()}"></span>
+            <span th:text="${info.getItemDescription()}"></span>
+        </div>
+        <button id="select">장착하기</button>
+    </div>
+
+</main>
+
+<script>
+    const selectBtn = document.getElementById("select");
+
+    selectBtn.addEventListener("click", () => {
+        const itemId = {itemId : Number(document.body.dataset.itemId)}
+        window.opener.postMessage(itemId, window.location.origin);
+        window.close();
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>건물 건설</title>
+    <link rel="stylesheet" href="/css/game/ConstructionBuildingForm.css">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
+<body th:data-player-id="${playerId}" th:data-game-id="${gameId}" th:data-tile-Id="${tileId}">
+
+<input hidden="hidden" th:data-tile-name="${tileName}">
+<input hidden="hidden" th:data-construction-cost="${tileConstructionCost}">
+<input hidden="hidden" th:data-construction-cost-discount="${constructionCostDiscount}">
+
+<h2>건물 인수</h2>
+<main>
+    <div>
+        <span id="tileName"></span>
+        <span>주의 : 건설비용의 2배지불</span>
+    </div>
+    <div id="acquire">
+    </div>
+
+    <button type="button" id="acquireBtn"></button>
+</main>
+
+<script>
+
+    const div = document.getElementById("acquire");
+    const tileName = document.getElementById("tileName");
+    const acquisitionCostElement = document.createElement("span");
+    const acquisitionCostDiscountElement = document.createElement("span");
+
+    const acquireBtn = document.getElementById("acquireBtn");
+    const input = document.querySelector('input[data-tile-name]');
+
+    const inputConstructionCost = document.querySelector('input[data-construction-cost]');
+    const tileConstructionCost = inputConstructionCost.dataset.constructionCost;
+    const inputConstructionCostDiscount = document.querySelector('input[data-construction-cost-discount]');
+    const constructionCostDiscount = inputConstructionCostDiscount.dataset.constructionCostDiscount;
+    const tileId = document.body.dataset.tileId;
+    const playerId= document.body.dataset.playerId;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        renderAcquisitionDetails();
+    })
+    function renderAcquisitionDetails() {
+        tileName.textContent = `${input.dataset.tileName}` + " 인수할까요?";
+        acquisitionCostElement.textContent = "인수 비용 -> "+`${tileConstructionCost}`
+        acquisitionCostDiscountElement.textContent = "인수 할인 -> "+ `${constructionCostDiscount}`
+        acquireBtn.textContent = "인수 : " + `${tileConstructionCost - constructionCostDiscount}`
+        div.append(acquisitionCostElement, acquisitionCostDiscountElement);
+    }
+    acquireBtn.addEventListener("click",() => {
+        const purchaseTileId = Number(tileId);
+        if (!Number.isSafeInteger(purchaseTileId) || purchaseTileId < 1) {
+            alert("구매할 타일 정보를 확인할 수 없습니다.");
+            return;
+        }
+
+        acquireBtn.disabled = true;
+
+        window.opener.postMessage({
+            type: "Building_Acquire_Request",
+            tileId: purchaseTileId,
+            playerId: playerId,
+        }, window.location.origin);
+
+        window.close();
+    });
+</script>
+</body>
+</html>

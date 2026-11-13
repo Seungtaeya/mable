@@ -1,0 +1,803 @@
+:root {
+    --background-start: #fffdf2;
+    --background-end: #e8f7ff;
+
+    --surface: #ffffffed;
+    --text: #30495d;
+    --muted: #7890a1;
+    --line: #d6e6ef;
+
+    --blue: #35ace3;
+    --blue-dark: #2185b9;
+
+    --gold: #dca83c;
+    --gold-dark: #8a611f;
+
+    --danger: #df6262;
+    --danger-dark: #bc4242;
+
+    --shadow: #3a53652e;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+
+    color: var(--text);
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+
+    background:
+            radial-gradient(
+                    circle at 15% 18%,
+                    #ffec8f80,
+                    transparent 27%
+            ),
+            radial-gradient(
+                    circle at 87% 80%,
+                    #abe7ff80,
+                    transparent 31%
+            ),
+            linear-gradient(
+                    145deg,
+                    var(--background-start),
+                    var(--background-end)
+            );
+}
+
+button,
+select {
+    font: inherit;
+}
+
+button,
+select,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+select:focus-visible,
+a:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+}
+
+/* 상단 메뉴 */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 76px;
+    padding: 10px 24px;
+
+    border-bottom: 1px solid #ddcb85;
+
+    background: linear-gradient(
+            180deg,
+            #fffffff5,
+            #fff2c2eb
+    );
+
+    box-shadow:
+            0 5px 18px #644d1e24,
+            inset 0 -2px 0 #ffffff;
+}
+
+nav a {
+    color: inherit;
+    text-decoration: none;
+}
+
+nav h2 {
+    margin: 0;
+    padding: 10px 40px;
+
+    border: 2px solid #cc942a;
+    border-radius: 999px;
+
+    color: #76531c;
+    background: linear-gradient(180deg, #fffdeb, #f1d36f);
+
+    box-shadow:
+            inset 0 2px 3px #ffffff,
+            0 4px 10px #6b4b1233;
+
+    font-size: clamp(21px, 2.4vw, 31px);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+
+    transition: transform 160ms ease;
+}
+
+nav a:hover h2 {
+    transform: translateY(-2px);
+}
+
+/* 전체 레이아웃 */
+main {
+    display: grid;
+    grid-template-columns:
+        minmax(280px, 350px)
+        minmax(0, 1fr);
+
+    align-items: start;
+    gap: 22px;
+
+    width: min(1500px, calc(100% - 32px));
+    margin: 24px auto;
+}
+
+/* 공통 패널 */
+#selectedItems,
+#owned-Items {
+    min-width: 0;
+
+    border: 1px solid var(--line);
+    border-radius: 20px;
+
+    background: var(--surface);
+
+    box-shadow:
+            0 16px 36px var(--shadow),
+            inset 0 1px 0 #ffffff;
+}
+
+/* ─────────────────────────
+   장착 슬롯 패널
+   ───────────────────────── */
+
+#selectedItems {
+    position: sticky;
+    top: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    height: clamp(570px, calc(100dvh - 140px), 760px);
+    max-height: calc(100dvh - 40px);
+    padding: 20px;
+
+    overflow-y: auto;
+
+    background:
+            radial-gradient(
+                    circle at 50% 20%,
+                    #ffffff,
+                    transparent 52%
+            ),
+            linear-gradient(145deg, #f7fcff, #e5f4ff);
+}
+
+#selectedItems::before {
+    flex: 0 0 auto;
+
+    display: block;
+    padding: 13px 12px;
+
+    content: "착용 중인 행운 아이템";
+
+    border: 1px solid #dfbd65;
+    border-radius: 12px;
+
+    color: #76531c;
+    background: linear-gradient(180deg, #fff8d7, #f2d98e);
+
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+}
+
+/* 빈 장착 슬롯 */
+#selectedItems > .selectItem {
+    position: relative;
+
+    flex: 1 0 110px;
+
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    min-height: 110px;
+    padding: 10px;
+
+    place-items: center;
+    overflow: hidden;
+
+    border: 2px dashed #a9c9da;
+    border-radius: 15px;
+
+    color: #75a2ba;
+
+    background: radial-gradient(
+            circle at center,
+            #ffffff,
+            #edf8ff
+    );
+
+    box-shadow:
+            inset 0 0 15px #62a1c31f,
+            0 6px 13px #425b6d1a;
+
+    font-size: clamp(35px, 4vw, 50px);
+    font-weight: 300;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+            transform 160ms ease,
+            border-color 160ms ease,
+            background 160ms ease,
+            box-shadow 160ms ease;
+}
+
+#selectedItems > .selectItem:hover {
+    border-color: var(--blue);
+
+    background: linear-gradient(
+            145deg,
+            #ffffff,
+            #dff4ff
+    );
+
+    box-shadow:
+            inset 0 0 20px #4caee126,
+            0 9px 17px #3777992e;
+
+    transform: translateY(-3px);
+}
+
+#selectedItems > .selectItem:active {
+    transform: translateY(1px);
+}
+
+/* 이미지가 들어간 장착 슬롯 */
+#selectedItems > .selectItem:has(img[src]:not([src=""])) {
+    border-style: solid;
+    border-color: #dfb33f;
+
+    background: linear-gradient(
+            145deg,
+            #fffef3,
+            #ffedaa
+    );
+
+    box-shadow:
+            0 0 0 3px #ffe78b66,
+            0 7px 15px #70541c26;
+}
+
+/* 장착 슬롯 안의 이미지 */
+#selectedItems > .selectItem img {
+    display: block;
+    width: min(100%, 96px);
+    height: auto;
+    aspect-ratio: 1;
+
+    border-radius: 10px;
+
+    object-fit: contain;
+    filter: drop-shadow(0 4px 5px #70541c26);
+}
+
+/* 사용자가 선택한 장착 슬롯 */
+#selectedItems > .selectItem.is-selected {
+    border-color: var(--blue);
+
+    box-shadow:
+            0 0 0 4px #36ace540,
+            0 0 22px #36ace566;
+}
+
+/* ─────────────────────────
+   보유 아이템 패널
+   ───────────────────────── */
+
+#owned-Items {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+
+    align-content: start;
+    align-items: center;
+    gap: 12px;
+
+    padding: 20px;
+}
+
+/* 상단 컨트롤 */
+#owned-Items > select,
+#owned-Items > button {
+    min-width: 0;
+    min-height: 43px;
+    padding: 9px 16px;
+
+    border: 1px solid #c7dce8;
+    border-radius: 10px;
+
+    color: var(--text);
+    background: #f5fbff;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+#owned-Items > select {
+    width: min(220px, 100%);
+}
+
+#owned-Items > select:focus-visible {
+    border-color: var(--blue);
+}
+
+#owned-Items > button {
+    transition:
+            transform 150ms ease,
+            filter 150ms ease,
+            box-shadow 150ms ease;
+}
+
+#owned-Items > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 13px var(--shadow);
+}
+
+#owned-Items > button:active {
+    transform: translateY(1px);
+}
+
+/* 판매 버튼 */
+#owned-Items > #sell {
+    border-color: #f0b5b5;
+
+    color: #b95050;
+    background: #fff2f2;
+}
+
+#owned-Items > #sell:hover {
+    border-color: var(--danger);
+    background: #ffe4e4;
+}
+
+/* 판매 모드 활성화 */
+#owned-Items > #sell.is-active {
+    border-color: var(--danger-dark);
+
+    color: #ffffff;
+
+    background: linear-gradient(
+            180deg,
+            #ef7777,
+            #cf4242
+    );
+
+    box-shadow:
+            0 0 0 3px #dd4a4a2e,
+            0 5px 12px #892d2d40;
+}
+
+/* 아이템 뽑기 버튼 */
+#owned-Items > #drawItems {
+    border-color: #dca63a;
+
+    color: #76531c;
+
+    background: linear-gradient(
+            180deg,
+            #fff6c9,
+            #f0d277
+    );
+
+    box-shadow:
+            inset 0 2px 3px #ffffff,
+            0 4px 9px #674a1626;
+}
+
+#owned-Items > #drawItems:hover {
+    filter: brightness(1.06);
+}
+
+/* 보유 개수 */
+#count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 80px;
+    min-height: 43px;
+    padding: 0 12px;
+
+    border: 1px solid #e1cc8c;
+    border-radius: 10px;
+
+    color: #7d5b1d;
+    background: #fff9e5;
+
+    font-size: 13px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+/* 아이템 목록 */
+#user-items {
+    grid-column: 1 / -1;
+
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: max-content;
+
+    align-content: start;
+    align-items: start;
+    gap: 16px;
+
+    min-width: 0;
+    height: clamp(360px, 68dvh, 780px);
+    padding: 17px;
+
+    overflow-y: auto;
+
+    border: 1px solid var(--line);
+    border-radius: 15px;
+
+    background:
+            linear-gradient(#ffffffbb, #ffffffbb),
+            repeating-linear-gradient(
+                    45deg,
+                    #eaf7ff 0 13px,
+                    #f9fdff 13px 26px
+            );
+
+    transition:
+            border-color 180ms ease,
+            background 180ms ease;
+}
+
+/* 보유 아이템이 없을 때 */
+#user-items:empty::before {
+    grid-column: 1 / -1;
+
+    padding: 80px 15px;
+
+    content: "보유한 행운 아이템이 없습니다.";
+
+    color: var(--muted);
+
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+}
+
+/* 아이템 카드 */
+#user-items > .owned-item {
+    position: relative;
+
+    display: block;
+    min-width: 0;
+    padding: 8px;
+
+    border: 2px solid #d6e5ed;
+    border-radius: 15px;
+
+    color: inherit;
+
+    background: linear-gradient(
+            145deg,
+            #ffffff,
+            #edf8ff
+    );
+
+    box-shadow: 0 7px 15px #49607121;
+
+    cursor: pointer;
+    text-decoration: none;
+
+    transition:
+            transform 170ms ease,
+            border-color 170ms ease,
+            box-shadow 170ms ease,
+            background 170ms ease;
+}
+
+#user-items > .owned-item:hover {
+    z-index: 1;
+
+    border-color: var(--gold);
+    transform: translateY(-4px);
+
+    box-shadow:
+            0 0 0 3px #f0cb5d38,
+            0 12px 22px #534c3533;
+}
+
+/* 아이템 이미지 */
+#user-items .itemImage {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+    object-fit: contain;
+}
+
+/* ─────────────────────────
+   SELECTED: 장착 중인 아이템
+   ───────────────────────── */
+
+#user-items > .owned-item.SELECTED {
+    border-color: var(--blue);
+
+    background: linear-gradient(
+            145deg,
+            #ffffff,
+            #d9f3ff
+    );
+
+    box-shadow:
+            0 0 0 3px #28a9e033,
+            0 6px 16px #2188bd40;
+}
+
+/* 장착 중 배지 */
+#user-items > .owned-item.SELECTED::after {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 2;
+
+    content: "장착 중";
+
+    padding: 4px 8px;
+
+    border: 1px solid #ffffff;
+    border-radius: 999px;
+
+    color: #ffffff;
+
+    background: linear-gradient(
+            135deg,
+            #39bdf0,
+            #187db8
+    );
+
+    box-shadow: 0 3px 7px #155a8a40;
+
+    font-size: clamp(9px, 1vw, 12px);
+    font-weight: 900;
+    line-height: 1.3;
+    white-space: nowrap;
+
+    pointer-events: none;
+}
+
+#user-items > .owned-item.SELECTED:hover {
+    border-color: #1387c4;
+
+    box-shadow:
+            0 0 0 3px #28a9e04d,
+            0 9px 20px #2188bd55;
+}
+
+/* ─────────────────────────
+   판매 모드
+   ───────────────────────── */
+
+#user-items.sell-mode {
+    border-color: #e8aaaa;
+
+    background:
+            linear-gradient(#ffffffb3, #ffffffb3),
+            repeating-linear-gradient(
+                    45deg,
+                    #fff0f0 0 13px,
+                    #fffafa 13px 26px
+            );
+}
+
+/* 판매 모드에서는 빈 체크박스 표시 */
+#user-items.sell-mode > .owned-item::before {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 3;
+
+    display: grid;
+    width: 29px;
+    height: 29px;
+    place-items: center;
+
+    content: "";
+
+    border: 2px solid #d9a3a3;
+    border-radius: 8px;
+
+    color: #ffffff;
+    background: #fffffff2;
+
+    box-shadow: 0 3px 7px #7e3f3f26;
+
+    font-size: 19px;
+    font-weight: 900;
+
+    pointer-events: none;
+}
+
+/* is-selected: 판매 대상으로 선택된 카드 */
+#user-items.sell-mode > .owned-item.is-selected,
+#user-items.sell-mode > .owned-item.is-selected:hover {
+    border-color: var(--danger);
+
+    background: linear-gradient(
+            145deg,
+            #fffafa,
+            #ffdede
+    );
+
+    box-shadow:
+            0 0 0 3px #df626233,
+            0 8px 18px #b4474738;
+
+    transform: translateY(-4px);
+}
+
+/* 판매 대상 체크 */
+#user-items.sell-mode > .owned-item.is-selected::before {
+    content: "✓";
+
+    border-color: #ffffff;
+
+    background: linear-gradient(
+            135deg,
+            #f28888,
+            #d54b4b
+    );
+
+    box-shadow:
+            0 0 0 1px #d65b5b,
+            0 4px 9px #a33e3e40;
+}
+
+/* ─────────────────────────
+   스크롤바
+   ───────────────────────── */
+
+#selectedItems,
+#user-items {
+    scrollbar-width: thin;
+    scrollbar-color: #9ec8dd #edf5f9;
+}
+
+#selectedItems::-webkit-scrollbar,
+#user-items::-webkit-scrollbar {
+    width: 10px;
+}
+
+#selectedItems::-webkit-scrollbar-track,
+#user-items::-webkit-scrollbar-track {
+    border-radius: 999px;
+    background: #edf5f9;
+}
+
+#selectedItems::-webkit-scrollbar-thumb,
+#user-items::-webkit-scrollbar-thumb {
+    border: 2px solid #edf5f9;
+    border-radius: 999px;
+
+    background: #9ec8dd;
+}
+
+/* 태블릿 */
+@media (max-width: 1050px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+
+    #selectedItems {
+        position: static;
+        justify-self: center;
+
+        width: min(100%, 430px);
+        height: 650px;
+        max-height: none;
+    }
+
+    #user-items {
+        height: 65dvh;
+        min-height: 360px;
+    }
+}
+
+/* 모바일 */
+@media (max-width: 700px) {
+    nav {
+        min-height: 64px;
+        padding: 8px 12px;
+    }
+
+    nav h2 {
+        padding: 9px 27px;
+        font-size: 20px;
+    }
+
+    main {
+        gap: 14px;
+
+        width: calc(100% - 16px);
+        margin: 12px auto;
+    }
+
+    #selectedItems {
+        width: 100%;
+        height: 570px;
+        padding: 13px;
+        gap: 11px;
+    }
+
+    #selectedItems::before {
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    #selectedItems > .selectItem {
+        flex-basis: 100px;
+        min-height: 100px;
+    }
+
+    #selectedItems > .selectItem img {
+        width: min(100%, 82px);
+    }
+
+    #owned-Items {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding: 13px;
+    }
+
+    #owned-Items > select,
+    #owned-Items > button,
+    #count {
+        width: 100%;
+    }
+
+    #owned-Items > button {
+        padding: 9px 10px;
+        font-size: 13px;
+    }
+
+    #user-items {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        height: 60dvh;
+        min-height: 330px;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    #user-items > .owned-item {
+        padding: 7px;
+        border-radius: 12px;
+    }
+}
+
+/* 움직임 감소 설정 */
+@media (prefers-reduced-motion: reduce) {
+    nav h2,
+    #selectedItems > .selectItem,
+    #owned-Items > button,
+    #user-items,
+    #user-items > .owned-item {
+        transition: none;
+    }
+}

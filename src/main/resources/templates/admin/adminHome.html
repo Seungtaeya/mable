@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/admin/admin.css}">
+    <script th:src="@{/js/admin/adminHome.js}" defer></script>
+    <script th:src="@{/js/admin/luckyItem.js}" defer></script>
+    <title>관리자 페이지</title>
+</head>
+<body>
+<nav>
+    <button type="button" id="character">캐릭터</button>
+    <button type="button" id="character-skill-button">캐릭터 스킬</button>
+    <button type="button" id="dice">주사위</button>
+    <button type="button" id="lucky-item">행운 아이템</button>
+</nav>
+
+<main>
+    <form id="character-form" class="admin-form">
+        <h2>캐릭터 생성</h2>
+        <label for="characterName">캐릭터 이름</label>
+        <input type="text" id="characterName" name="characterName" required>
+        <label for="characterImage">캐릭터 이미지</label>
+        <input type="file" id="characterImage" name="image" accept="image/png,image/jpeg" required>
+        <label for="tollDiscount">통행료 할인</label>
+        <input type="number" id="tollDiscount" name="tollDiscount" min="0" required>
+        <label for="bonusGameWin">보너스 게임 승리</label>
+        <input type="number" id="bonusGameWin" name="bonusGameWin" min="0" required>
+        <label for="specialCostDisCount">특수 비용 할인</label>
+        <input type="number" id="specialCostDisCount" name="specialCostDisCount" min="0" required>
+        <label for="goldenFortuneAcquisition">황금 포춘 획득</label>
+        <input type="number" id="goldenFortuneAcquisition" name="goldenFortuneAcquisition" min="0" required>
+        <label for="constructCostDisCount">건설 비용 할인</label>
+        <input type="number" id="constructCostDisCount" name="constructCostDisCount" min="0" required>
+        <label for="diceControl">주사위 컨트롤</label>
+        <input type="number" id="diceControl" name="diceControl" min="0" required>
+        <label for="acquisitionCostDiscount">인수 비용 할인</label>
+        <input type="number" id="acquisitionCostDiscount" name="acquisitionCostDiscount" min="0" required>
+        <label for="rank">등급</label>
+        <input type="text" id="rank" name="rank" required>
+
+        <button type="submit" id="saveBtn">캐릭터 저장</button>
+    </form>
+
+    <form id="character-skill-form" class="admin-form" hidden>
+        <h2>캐릭터 스킬 생성</h2>
+            <label for="skillImage">스킬 이미지</label>
+            <input type="file" id="skillImage" name="image" accept="image/png,image/jpeg" required>
+            <label for="skillCode">스킬 코드</label>
+            <select id="skillCode" name="skillCode" required>
+                <option value="">스킬 코드 선택</option>
+
+                <option
+                        th:each="code : ${skillCodes}"
+                        th:value="${code.name()}"
+                        th:text="${code.name()}">
+                </option>
+            </select>
+            <label for="skillName">스킬 이름</label>
+            <input type="text" id="skillName" name="skillName" required>
+            <label for="skillDescription">스킬 설명</label>
+            <textarea id="skillDescription" name="skillDescription" rows="5" required></textarea>
+            <label for="triggerType">발동 유형</label>
+            <select id="triggerType" name="triggerType" required>
+                <option value="">발동 유형 선택</option>
+
+                <option
+                        th:each="type : ${triggerTypes}"
+                        th:value="${type.name()}"
+                        th:text="${type.name()}">
+                </option>
+            </select>
+            <label for="skillCharacterId">캐릭터</label>
+            <select id="skillCharacterId" name="characterId" required>
+                <option value="">캐릭터 선택</option>
+
+                <option
+                        th:each="character : ${characters}"
+                        th:value="${character.id}"
+                        th:text="${character.characterName}">
+                </option>
+            </select>
+            <label for="activationRate">발동 확률</label>
+            <input type="number" id="activationRate" name="activationRate" min="0" max="100" required>
+            <label for="effectValue">효과 수치</label>
+            <input type="number" id="effectValue" name="effectValue" required>
+            <label for="displayOrder">표시 순서</label>
+            <input type="number" id="displayOrder" name="displayOrder" min="0" required>
+
+        <button type="submit">스킬 저장</button>
+    </form>
+
+    <form id="lucky-item-form" class="admin-form" enctype="multipart/form-data" hidden>
+
+        <h2>행운 아이템 생성</h2>
+
+        <label for="luckyItemName">아이템 이름</label>
+        <input type="text" id="luckyItemName" name="itemName" maxlength="50" required>
+
+        <label for="luckyItemImage">아이템 이미지</label>
+        <input type="file" id="luckyItemImage" name="image" accept="image/png,image/jpeg,image/webp" required>
+
+        <label for="luckyItemRank">아이템 등급</label>
+        <select id="luckyItemRank" name="itemRank" required>
+
+            <option value="">아이템 등급 선택</option>
+            <option value="B">B</option>
+            <option value="A">A</option>
+            <option value="S">S</option>
+            <option value="S_PLUS">S+</option>
+        </select>
+
+        <label for="luckyItemSkillCode">스킬 코드 </label>
+        <select id="luckyItemSkillCode" name="skillCode" required>
+
+            <option value="">스킬 코드 선택</option>
+
+            <option
+                    th:each="code : ${skillCodes}"
+                    th:value="${code.name()}"
+                    th:text="${code.name()}">
+            </option>
+        </select>
+
+        <label for="luckyItemTriggerType">발동 유형</label>
+        <select id="luckyItemTriggerType" name="triggerType" required>
+            <option value="">발동 유형 선택</option>
+
+            <option
+                    th:each="type : ${triggerTypes}"
+                    th:value="${type.name()}"
+                    th:text="${type.name()}">
+            </option>
+        </select>
+
+        <label for="activationRate">발동 확률</label>
+        <input type="number" id="luckyItemActivationRate" name="activationRate" min="0" max="100" required>
+
+        <label for="luckyItemSkillDescription">스킬 설명</label>
+        <textarea id="luckyItemSkillDescription" name="skillDescription" rows="5" maxlength="500" placeholder="행운 아이템의 스킬 효과를 입력하세요." required></textarea>
+
+        <button type="submit" id="saveLuckyItemButton">행운 아이템 저장</button>
+    </form>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.3.0/bundles/stomp.umd.min.js"></script>
+    <script th:src="@{/js/room/waitingRoom.js}" defer></script>
+    <script th:src="@{/js/websocket/waitingRoomWebSocket.js}" defer></script>
+    <link rel="stylesheet" th:href="@{/css/room/GameWaitingRoom.css}">
+    <title>게임 대기방</title>
+</head>
+<body th:attr="data-room-id=${roomId}, data-user-id=${currentUserId}">
+
+<header>
+    <span th:text="${gameRoom.title}"></span>
+    <span id="playerCount"></span>
+    <span th:text="|${gameRoom.maxPlayers}인전|"></span>
+    <input type="hidden" th:value="${gameRoom.roomId}" id="roomId">
+    <button type="button" onclick="leave()">나가기</button>
+</header>
+
+<main>
+    <ul id="player-list">
+
+    </ul>
+
+    <div id="chat-box">
+    </div>
+
+    <div id="chat-input">
+        <input type="text" id="msg-input">
+        <button type="button" id="send-btn">전송</button>
+    </div>
+
+   <div id="start-readyBtn">
+       <button id="gameActionBtn">시작</button>
+   </div>
+</main>
+</body>
+</html>

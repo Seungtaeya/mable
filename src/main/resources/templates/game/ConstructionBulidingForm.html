@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>건물 건설</title>
+    <link rel="stylesheet" href="/css/game/ConstructionBuildingForm.css">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
+<body th:data-player-id="${playerId}" th:data-player-cash="${playerCash}">
+
+<main>
+    <h2>건설할 건물 선택</h2>
+
+    <div id="buildings">
+        <select id="building" multiple>
+
+        </select>
+    </div>
+    <div>
+        <label>건설 비용 -> </label>
+        <span id="constructionCost"></span>
+    </div>
+
+    <div>
+        <label>건설비용 할인 -> </label>
+        <span id="constructionCostDiscount"></span>
+    </div>
+
+    <div>
+        <button type="button" id="buy">구매하기</button>
+    </div>
+
+    <div>
+        <label>통행료 -> </label>
+        <span id="toll-span"></span>
+    </div>
+</main>
+<script th:inline="javascript">
+    (() => {
+        const playerId = document.body.dataset.playerId;
+        const tileId = /*[[${tileId}]]*/ null;
+        const landPrice = /*[[${landPrice}]]*/ null;
+        const housePrice = /*[[${housePrice}]]*/ null;
+        const villaPrice = /*[[${villaPrice}]]*/ null;
+        const apartmentPrice = /*[[${apartmentPrice}]]*/ null;
+        const constructionDiscount = /*[[${constructionCostDiscount}]]*/ 0;
+        // 현재 컨트롤러는 관광지에 건물 가격 세 가지를 모두 전달하지 않는다.
+        const landOnly = [housePrice, villaPrice, apartmentPrice].every(price => price == null);
+        const discountRate = landOnly ? 0 : Number(constructionDiscount ?? 0);
+
+        const toMoney = value => {
+            if (value == null || String(value).trim() === "") return null;
+            const amount = Number(value);
+            return amount >= 0 && Number.isSafeInteger(Math.floor(amount))
+                ? Math.floor(amount)
+                : null;
+        };
+
+        const playerCash = toMoney(document.body.dataset.playerCash);
+
+        const buildings = document.getElementById("buildings");
+        const select = document.getElementById("building");
+        const buy = document.getElementById("buy");
+        const costText = document.getElementById("constructionCost");
+        const discountText = document.getElementById("constructionCostDiscount");
+        const tollText = document.getElementById("toll-span");
+
+        const items = [
+            { name: "땅값 · 필수", image: "/image/flag.png", price: toMoney(landPrice) }
+        ];
+
+        if (!landOnly) {
+            items.push(
+                { name: "주택", image: "/image/house.png", price: toMoney(housePrice) },
+                { name: "빌라", image: "/image/villa.png", price: toMoney(villaPrice) },
+                { name: "아파트", image: "/image/apartment.png", price: toMoney(apartmentPrice) }
+            );
+        }
+
+        const formatWon = amount => `${amount.toLocaleString("ko-KR")}원`;
+        const validPrices = items.every(({ price }) => price !== null)
+            && Number.isInteger(discountRate) && discountRate >= 0 && discountRate <= 100;
+
+        // 관광지는 땅만 매입하고, 일반 타일은 건물 세 가지가 기본 선택된다.
+        const selectedBuildings = new Set(landOnly ? [] : [1, 2, 3]);
+
+        const grid = document.createElement("div");
+        grid.className = "building-grid";
+
+        if (landOnly) {
+            document.querySelector("main > h2").textContent = "관광지 구매";
+            costText.previousElementSibling.textContent = "땅값 → ";
+            discountText.parentElement.style.display = "none";
+            // 이 컨트롤러에서는 관광지의 통행료 정보를 따로 제공하지 않는다.
+            tollText.parentElement.style.display = "none";
+            grid.style.gridTemplateColumns = "minmax(0, 140px)";
+            grid.style.justifyContent = "center";
+        }
+
+        const cards = items.map((item, level) => {
+            const card = document.createElement(level === 0 ? "div" : "button");
+            card.className = "building-card";
+
+            const title = document.createElement("strong");
+            title.className = "building-title";
+            title.textContent = item.name;
+
+            const img = document.createElement("img");
+            img.src = item.image;
+            img.alt = "";
+
+            const price = document.createElement("span");
+            price.className = "building-price";
+            price.textContent = item.price !== null ? formatWon(item.price) : "—";
+
+            card.append(title, img, price);
+            grid.appendChild(card);
+
+            if (level !== 0) {
+                card.type = "button";
+                card.disabled = !validPrices;
+
+                card.addEventListener("click", () => {
+                    // 다른 건물은 건드리지 않고, 클릭한 건물만 바꾼다.
+                    if (selectedBuildings.has(level)) {
+                        selectedBuildings.delete(level);
+                    } else {
+                        selectedBuildings.add(level);
+                    }
+
+                    render();
+                });
+            }
+
+            return card;
+        });
+
+        select.hidden = true;
+        select.disabled = true;
+        buildings.appendChild(grid);
+
+        function render() {
+            cards.forEach((card, level) => {
+                if (level === 0) return;
+
+                const selected = selectedBuildings.has(level);
+                card.classList.toggle("is-selected", selected);
+                card.setAttribute("aria-pressed", String(selected));
+            });
+
+            if (!validPrices) {
+                buy.disabled = true;
+                buy.textContent = "가격 정보를 확인해 주세요";
+                return;
+            }
+
+            const constructionCost = [...selectedBuildings]
+                .reduce((sum, level) => sum + items[level].price, 0);
+
+            const priceBeforeDiscount = items[0].price + constructionCost;
+
+            // 할인은 땅값을 제외한 건물값에만 적용.
+            const discountedConstruction = Math.floor(
+                constructionCost * (100 - discountRate) / 100
+            );
+            const discountAmount = constructionCost - discountedConstruction;
+            const total = items[0].price + discountedConstruction;
+
+            // 일반 건물 통행료: 할인 전 땅값 + 선택한 건물 정가의 10%.
+            const toll = Math.floor(priceBeforeDiscount / 10);
+
+            costText.textContent = formatWon(priceBeforeDiscount);
+            discountText.textContent = discountAmount > 0
+                ? `−${formatWon(discountAmount)}`
+                : formatWon(0);
+            tollText.textContent = formatWon(toll);
+
+            buy.disabled = playerCash === null || playerCash < total;
+            buy.textContent = playerCash === null
+                ? "소지금을 확인해 주세요"
+                : buy.disabled
+                    ? "구매 불가 · 소지금 부족"
+                    : `구매하기 · ${formatWon(total)}`;
+        }
+
+        buy.addEventListener("click", () => {
+            if (!validPrices || buy.disabled) return;
+
+            const purchaseTileId = Number(tileId);
+            if (!Number.isSafeInteger(purchaseTileId) || purchaseTileId < 1) {
+                alert("구매할 타일 정보를 확인할 수 없습니다.");
+                return;
+            }
+
+            if (!window.opener || window.opener.closed) {
+                alert("게임 창을 확인할 수 없습니다.");
+                return;
+            }
+
+            buy.disabled = true;
+
+            window.opener.postMessage({
+                type: "BUILDING_PURCHASE_REQUEST",
+                tileId: purchaseTileId,
+                playerId: playerId,
+                buildingLevels: [...selectedBuildings].sort((a, b) => a - b)
+            }, window.location.origin);
+
+            window.close();
+        });
+
+        render();
+    })();
+</script>
+
+</body>
+</html>

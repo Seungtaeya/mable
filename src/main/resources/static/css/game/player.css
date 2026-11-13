@@ -1,0 +1,270 @@
+/* 넓은 화면: 플레이어 정보를 화면 가장자리에 배치 */
+#players {
+    position: fixed;
+    inset: 72px clamp(12px, 2vw, 32px) 18px;
+    z-index: 10;
+
+    display: block;
+    margin: 0;
+    pointer-events: none;
+}
+
+#player-Card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    align-items: start;
+
+    height: 100%;
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+#player-Card > .player-card {
+    --accent: #60b7ee;
+    --ribbon: #215a8b;
+    --badge-size: clamp(34px, 3.4vw, 46px);
+    --portrait-width: clamp(46px, 5vw, 68px);
+    --name-height: 25px;
+
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr var(--name-height);
+
+    width: min(100%, clamp(210px, 23vw, 308px));
+    min-height: 90px;
+    padding-left: calc(var(--badge-size) + 16px);
+    padding-right: calc(var(--portrait-width) + 14px);
+    overflow: hidden;
+
+    border: 2px solid var(--accent);
+    border-radius: 13px;
+
+    color: #fff5d8;
+    background:
+            linear-gradient(
+                    to top,
+                    var(--ribbon) 0 var(--name-height),
+                    transparent var(--name-height)
+            ),
+            radial-gradient(ellipse at 55% 0%, #647148, transparent 75%),
+            linear-gradient(135deg, #394631, #1b2923);
+
+    box-shadow:
+            inset 0 1px 0 #ffffff33,
+            0 7px 18px #17282138;
+}
+
+/* 0: 왼쪽 아래 → 1: 왼쪽 위 → 2: 오른쪽 위 → 3: 오른쪽 아래 */
+#player-Card > .player-card[data-turn-order="0"] {
+    grid-area: 2 / 1;
+    align-self: end;
+}
+
+#player-Card > .player-card[data-turn-order="1"] {
+    --accent: #f29583;
+    --ribbon: #973f43;
+
+    grid-area: 1 / 1;
+}
+
+#player-Card > .player-card[data-turn-order="2"] {
+    --accent: #b69aef;
+    --ribbon: #674487;
+
+    grid-area: 1 / 2;
+    justify-self: end;
+}
+
+#player-Card > .player-card[data-turn-order="3"] {
+    --accent: #7fd39c;
+    --ribbon: #31664d;
+
+    grid-area: 2 / 2;
+    align-self: end;
+    justify-self: end;
+}
+
+/* 캐릭터 이름 띠: li의 첫 번째 span은 플레이어 닉네임 */
+#player-Card .player-card > span:first-child {
+    grid-row: 2;
+
+    overflow: hidden;
+
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: var(--name-height);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 보유머니 라벨과 금액 */
+#player-Card .cashLabel {
+    grid-row: 1;
+    align-self: center;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    min-width: 0;
+    padding: 5px 0;
+
+    color: #dedec5;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+#player-Card .cashLabel > span {
+    display: block;
+    overflow: hidden;
+
+    color: #ffe7a3;
+    font-size: clamp(15px, 1.5vw, 22px);
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    text-shadow: 0 2px 3px #00000080;
+    white-space: nowrap;
+}
+
+/* cashLabel 안의 마지막 label: 현재 JS에서는 turnOrder */
+#player-Card .cashLabel > label {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+
+    display: grid;
+    width: var(--badge-size);
+    aspect-ratio: 1;
+    place-items: center;
+
+    transform: translateY(-50%);
+
+    border: 2px solid #e8c46d;
+    border-radius: 50%;
+
+    color: #fff3d0;
+    background: radial-gradient(circle at 40% 25%, #a96039, #58261c 72%);
+
+    box-shadow:
+            inset 0 2px 4px #ffffff36,
+            0 3px 7px #00000055;
+
+    font-size: clamp(15px, 1.8vw, 21px);
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* JS의 인라인 height: 100px는 max-height로 제한 */
+#player-Card .characterImage {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+
+    display: block;
+    width: var(--portrait-width);
+    max-height: calc(100% - 10px);
+
+    transform: translateY(-50%);
+
+    border: 1px solid #e8c46d;
+    border-radius: 8px;
+
+    background: #282c23;
+    object-fit: contain;
+}
+
+/* 좁은 화면: 보드 아래에서 겹치지 않도록 배치 */
+@media (max-width: 760px) {
+    #players {
+        position: static;
+        margin: 12px 0 4px;
+    }
+
+    #player-Card {
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(min(100%, 210px), 1fr)
+        );
+        grid-template-rows: none;
+        gap: 10px;
+
+        height: auto;
+    }
+
+    #player-Card > .player-card,
+    #player-Card > .player-card[data-turn-order] {
+        grid-area: auto;
+        align-self: stretch;
+        justify-self: stretch;
+
+        width: 100%;
+    }
+}
+
+#player-Card > .player-card.has-activated-items {
+    overflow: visible;
+    z-index: 1;
+}
+
+/* 위쪽 카드: 카드 바로 아래 */
+#player-Card > .player-card > .activated-items {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 2;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: none;
+
+    animation: activated-item-fade 1.8s ease-out both;
+}
+
+/* 아래쪽 카드: 카드 바로 위 */
+#player-Card > .player-card:is([data-turn-order="0"], [data-turn-order="3"])
+> .activated-items {
+    top: auto;
+    bottom: calc(100% + 6px);
+}
+
+#player-Card .activated-items img {
+    display: block;
+    width: 40px;
+    height: 40px;
+
+    border-radius: 8px;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 5px #0006);
+}
+
+@keyframes activated-item-fade {
+    0% { opacity: 0; }
+    12%, 66% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* 좁은 화면에서는 카드끼리 겹치지 않게 카드 안쪽 상단에 표시 */
+@media (max-width: 760px) {
+    #player-Card > .player-card.has-activated-items > .activated-items {
+        top: 6px;
+        bottom: auto;
+    }
+
+    #player-Card .activated-items img {
+        width: 34px;
+        height: 34px;
+    }
+}

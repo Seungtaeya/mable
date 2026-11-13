@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/home/root.css">
+</head>
+<body>
+<header class="header">
+    <div id="logo">모두의 마블</div>
+    <nav>
+        <ul id="topMenu">
+            <li><a href="#">게임 소개</a></li>
+            <li><a href="#">게임 방법</a></li>
+            <li th:if="${username == null}">
+                <a href="/login">로그인</a>
+            </li>
+            <li th:if="${username == null}">
+                <a href="/registry">회원가입</a>
+            </li>
+
+            <li th:if="${username != null}">
+                <span th:text="${username + '님'}"></span>
+            </li>
+
+            <li th:if="${username != null}">
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit">로그아웃</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main class="content">
+    <section id="gameFeatures">
+        실시간 대전으로 주사위를 던져 이동 한 뒤 도시를 건설후 상대를 파산 시켜 승리를 하라
+    </section>
+
+    <section id="preview">
+        <img src="#" alt="인게임 이미지">
+        <img src="#" alt="대기방 이미지">
+    </section>
+
+    <section id="gameStart">
+        지금 게임을 시작해 보세요!
+        <a href="/login" id="login">로그인</a>
+        <a href="/registry" id="registry">회원가입</a>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로비</title>
+    <link rel="stylesheet" href="/css/lobby/lobby.css">
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.3.0/bundles/stomp.umd.min.js"></script>
+    <script th:src="@{/js/room/lobby.js}" defer></script>
+    <script th:src="@{/js/websocket/lobbyWebSocket.js}" defer></script>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
+<body>
+<header>
+    <nav>
+        <ul>
+            <li>
+               <button type="button">로비</button>
+            </li>
+
+            <li><button type="button">랭킹</button></li>
+            <li th:if="${username != null}">
+                <span th:text="${username + '님'}"></span>
+            </li>
+
+            <li><button type="button">설정</button></li>
+            <li>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit">로그아웃</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+    <div>
+        <button type="button" onclick="clearAllRoomsByAdmin()">관리자용 방 전체삭제</button>
+    </div>
+</header>
+
+<main>
+
+    <div>
+        <h2>게임방 목록</h2>
+        <input type="text" id="search-input" name="search" placeholder="방 제목을 검색하세요.">
+        <button type="button">전체</button>
+        <button type="button">대기중</button>
+        <button type="button">게임중</button>
+        <button type="button">새로고침</button>
+        <button type="button" id="createRoom_btn">방만들기</button>
+    </div>
+
+    <div>
+        <table id="room-table">
+            <tr>
+                <td>방제목</td>
+                <td>방장</td>
+                <td>인원</td>
+                <td>상태</td>
+                <td>입장</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="quick-menu">
+        <a th:href="@{/characters}">
+            <img th:src="@{/image/character.png}" alt="캐릭터 카드">
+            <span>캐릭터 카드</span>
+        </a>
+
+        <a th:href="@{/dices}">
+            <img src="#" alt="주사위">
+            <span>주사위</span>
+        </a>
+
+        <a th:href="@{/luckyItem}">
+            <img src="/image/drawItemBox.png" alt="행운 아이템">
+            <span>행운 아이템</span>
+        </a>
+
+        <a href="#">
+            <img src="#" alt="상점">
+            <span>상점</span>
+        </a>
+    </div>
+
+    <div>
+        <img src="#" alt="사용중인 캐릭터 카드 보여줄 이미지" id="useCharacterCard">
+        <label>로그인한 사용자</label>
+    </div>
+</main>
+
+<footer>
+    <div>
+        <h3>공지사항</h3>
+    </div>
+
+    <div>
+        <h3>실시간 채팅</h3>
+        <div id="chat_box">
+
+        </div>
+
+        <div>
+            <input type="text" id="msg" placeholder="메시지를 입력해주세요">
+            <button type="button" id="send">전송</button>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

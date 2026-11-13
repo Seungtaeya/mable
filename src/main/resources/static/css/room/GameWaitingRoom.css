@@ -1,0 +1,560 @@
+/* =========================
+   기본 설정
+========================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary: #2f8df5;
+    --primary-dark: #1672d6;
+    --primary-light: #eaf5ff;
+    --accent: #ffb547;
+    --danger: #ff6b6b;
+    --success: #38c98b;
+    --text-main: #183354;
+    --text-sub: #6f8299;
+    --line: #d8e8f5;
+    --panel: rgba(255, 255, 255, 0.94);
+    --shadow: 0 16px 40px rgba(42, 110, 166, 0.14);
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    padding: 24px;
+    color: var(--text-main);
+    font-family:
+            Pretendard, "Noto Sans KR", -apple-system, BlinkMacSystemFont,
+            "Segoe UI", sans-serif;
+
+    background:
+            radial-gradient(
+                    circle at 15% 15%,
+                    rgba(121, 210, 255, 0.55),
+                    transparent 28%
+            ),
+            radial-gradient(
+                    circle at 85% 80%,
+                    rgba(160, 230, 255, 0.45),
+                    transparent 30%
+            ),
+            linear-gradient(135deg, #eaf9ff 0%, #cbeeff 52%, #eefbff 100%);
+}
+
+/* 배경 장식 */
+body::before,
+body::after {
+    position: fixed;
+    z-index: -1;
+    border-radius: 50%;
+    content: "";
+    filter: blur(2px);
+}
+
+body::before {
+    top: 120px;
+    left: 4%;
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.28);
+}
+
+body::after {
+    right: 6%;
+    bottom: 8%;
+    width: 250px;
+    height: 250px;
+    background: rgba(255, 255, 255, 0.24);
+}
+
+/* =========================
+   상단 방 정보
+========================= */
+header {
+    display: flex;
+    align-items: center;
+    width: min(1200px, 100%);
+    min-height: 82px;
+    margin: 0 auto 20px;
+    padding: 18px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 24px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+}
+
+/* 방 제목 */
+header > span:first-child {
+    overflow: hidden;
+    max-width: 500px;
+    font-size: 1.45rem;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 현재 인원 */
+#playerCount {
+    margin-left: auto;
+    padding: 9px 14px;
+    border-radius: 12px;
+    color: var(--primary-dark);
+    font-weight: 800;
+    background: var(--primary-light);
+}
+
+/* 최대 인원 */
+header > span:nth-of-type(3) {
+    margin-left: 10px;
+    color: var(--text-sub);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+header > button {
+    min-width: 82px;
+    height: 42px;
+    margin-left: 18px;
+    border: 1px solid #ffd1d1;
+    border-radius: 12px;
+    color: #eb5050;
+    font-size: 0.95rem;
+    font-weight: 800;
+    background: #fff4f4;
+    cursor: pointer;
+    transition:
+            transform 0.18s ease,
+            background-color 0.18s ease,
+            box-shadow 0.18s ease;
+}
+
+header > button:hover {
+    color: white;
+    background: var(--danger);
+    box-shadow: 0 8px 18px rgba(255, 107, 107, 0.25);
+    transform: translateY(-2px);
+}
+
+/* =========================
+   메인 레이아웃
+========================= */
+main {
+    display: grid;
+    grid-template-areas:
+        "players chat"
+        "action chat-input";
+    grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.85fr);
+    grid-template-rows: minmax(490px, 1fr) auto;
+    gap: 18px;
+    width: min(1200px, 100%);
+    margin: 0 auto;
+}
+
+/* =========================
+   플레이어 목록
+========================= */
+#player-list {
+    position: relative;
+    display: grid;
+    grid-area: players;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
+    gap: 18px;
+    min-height: 490px;
+    padding: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 24px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+}
+
+#player-list::before {
+    position: absolute;
+    top: 24px;
+    left: 28px;
+    content: "참가 플레이어";
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+/* 플레이어가 없을 때 */
+#player-list:empty::after {
+    display: grid;
+    grid-column: 1 / -1;
+    place-items: center;
+    min-height: 330px;
+    color: var(--text-sub);
+    content: "플레이어 정보를 불러오는 중입니다.";
+    font-weight: 600;
+}
+
+/*
+ JS에서 플레이어를 추가할 때 아래 클래스 사용
+
+ <div class="player-card host">
+     <div class="player-avatar">1</div>
+     <div class="player-info">
+         <strong class="player-name">닉네임</strong>
+         <span class="player-state">준비 중</span>
+     </div>
+     <span class="host-badge">방장</span>
+ </div>
+*/
+.player-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-height: 145px;
+    padding: 24px 20px;
+    border: 2px solid transparent;
+    border-radius: 20px;
+    background: #f7fbff;
+    box-shadow: 0 8px 20px rgba(43, 102, 151, 0.09);
+    transition:
+            transform 0.18s ease,
+            border-color 0.18s ease,
+            box-shadow 0.18s ease;
+}
+
+.player-card:hover {
+    border-color: #b9dcff;
+    box-shadow: 0 12px 25px rgba(43, 102, 151, 0.14);
+    transform: translateY(-3px);
+}
+
+.player-card.host {
+    border-color: #ffd37a;
+    background: linear-gradient(135deg, #fffdf3, #fff7dc);
+}
+
+.player-card.ready {
+    border-color: #9ee5c8;
+    background: linear-gradient(135deg, #f4fffa, #e8fff5);
+}
+
+.player-avatar {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    border: 4px solid white;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.35rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #63b8ff, #267de4);
+    box-shadow: 0 8px 18px rgba(47, 141, 245, 0.23);
+}
+
+.player-info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.player-name {
+    overflow: hidden;
+    font-size: 1.05rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.player-state {
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.host-badge,
+.ready-badge {
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 900;
+}
+
+.host-badge {
+    color: #996000;
+    background: #ffe3a1;
+}
+
+.ready-badge {
+    color: #14885c;
+    background: #c9f7e3;
+}
+
+/* =========================
+   채팅
+========================= */
+#chat-box {
+    display: flex;
+    grid-area: chat;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    min-height: 490px;
+    max-height: 590px;
+    padding: 62px 20px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 24px;
+    background:
+            linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+            linear-gradient(135deg, #dff5ff, #edfaff);
+    box-shadow: var(--shadow);
+}
+
+#chat-box::before {
+    position: absolute;
+    margin-top: -40px;
+    color: var(--text-main);
+    content: "대기방 채팅";
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+/* JS로 만들어지는 채팅 메시지용 */
+.chat-message {
+    align-self: flex-start;
+    max-width: 85%;
+    padding: 10px 13px;
+    border-radius: 6px 16px 16px;
+    color: #344c67;
+    line-height: 1.45;
+    background: #edf4fa;
+    word-break: break-word;
+}
+
+.chat-message.mine {
+    align-self: flex-end;
+    border-radius: 16px 6px 16px 16px;
+    color: white;
+    background: var(--primary);
+}
+
+.chat-sender {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    opacity: 0.8;
+}
+
+.system-message {
+    align-self: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    color: var(--text-sub);
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: #eef5f9;
+}
+
+/* 스크롤바 */
+#chat-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+#chat-box::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: #bfd9eb;
+    background-clip: padding-box;
+}
+
+/* =========================
+   채팅 입력창
+========================= */
+#chat-input {
+    display: flex;
+    grid-area: chat-input;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 18px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+}
+
+#msg-input {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    padding: 0 15px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    outline: none;
+    color: var(--text-main);
+    font: inherit;
+    background: #f9fcff;
+    transition:
+            border-color 0.18s ease,
+            box-shadow 0.18s ease;
+}
+
+#msg-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(47, 141, 245, 0.12);
+}
+
+#send-btn {
+    min-width: 72px;
+    border: 0;
+    border-radius: 12px;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 800;
+    background: var(--primary);
+    cursor: pointer;
+    transition:
+            transform 0.18s ease,
+            background-color 0.18s ease;
+}
+
+#send-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* =========================
+   시작/준비 버튼
+========================= */
+#start-readyBtn {
+    display: flex;
+    grid-area: action;
+    justify-content: center;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+}
+
+#gameActionBtn {
+    width: min(360px, 100%);
+    min-height: 58px;
+    border: 0;
+    border-radius: 16px;
+    color: white;
+    font-size: 1.15rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #41a4ff, #2376e4);
+    box-shadow: 0 10px 22px rgba(47, 141, 245, 0.3);
+    cursor: pointer;
+    transition:
+            transform 0.18s ease,
+            box-shadow 0.18s ease,
+            filter 0.18s ease;
+}
+
+#gameActionBtn:hover {
+    box-shadow: 0 14px 26px rgba(47, 141, 245, 0.38);
+    transform: translateY(-3px);
+    filter: brightness(1.04);
+}
+
+#gameActionBtn:active {
+    transform: translateY(0);
+}
+
+#gameActionBtn:disabled {
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.55;
+    transform: none;
+}
+
+/* 준비 상태 버튼에 붙여 사용할 수 있는 클래스 */
+#gameActionBtn.ready {
+    background: linear-gradient(135deg, #44d69a, #21ad73);
+}
+
+/* 준비 취소 상태 */
+#gameActionBtn.cancel-ready {
+    background: linear-gradient(135deg, #ffbd57, #f29222);
+}
+
+/* =========================
+   반응형
+========================= */
+@media (max-width: 850px) {
+    body {
+        padding: 14px;
+    }
+
+    header {
+        flex-wrap: wrap;
+        gap: 10px;
+        border-radius: 18px;
+    }
+
+    header > span:first-child {
+        width: 100%;
+        max-width: none;
+    }
+
+    #playerCount {
+        margin-left: 0;
+    }
+
+    header > button {
+        margin-left: auto;
+    }
+
+    main {
+        grid-template-areas:
+            "players"
+            "action"
+            "chat"
+            "chat-input";
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+    #player-list {
+        min-height: 400px;
+    }
+
+    #chat-box {
+        min-height: 350px;
+        max-height: 430px;
+    }
+}
+
+@media (max-width: 560px) {
+    #player-list {
+        grid-template-columns: 1fr;
+        padding: 66px 16px 16px;
+    }
+
+    #player-list::before {
+        left: 18px;
+    }
+
+    .player-card {
+        min-height: 115px;
+    }
+
+    header > span:first-child {
+        font-size: 1.2rem;
+    }
+
+    #chat-input {
+        gap: 7px;
+    }
+
+    #send-btn {
+        min-width: 62px;
+    }
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/LuckyItem/luckyItemHome.css}">
+    <script th:src="@{/js/luckyItem/luckyItem.js}" defer></script>
+    <title>아이템</title>
+</head>
+<body>
+<nav>
+    <a th:href="@{/lobby}"><h2>아이템</h2></a>
+</nav>
+<main>
+    <div id="selectedItems">
+        <button type="button" class="selectItem" th:data-button-Id="0">+</button>
+        <button type="button" class="selectItem" th:data-button-Id="1">+</button>
+        <button type="button" class="selectItem" th:data-button-Id="2">+</button>
+        <button type="button" class="selectItem" th:data-button-Id="3">+</button>
+    </div>
+
+    <div id="owned-Items">
+        <select name="select">
+            <option>등급순</option>
+            <option>이름순</option>
+        </select>
+        <button type="button" id="sell">판매</button>
+        <button id="drawItems" type="button">아이템 뽑기</button>
+        <span id="count"></span>
+        <div id="user-items" class="items"></div>
+    </div>
+</main>
+</body>
+</html>

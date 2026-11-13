@@ -1,0 +1,493 @@
+:root {
+    --page-width: 1280px;
+    --text: #263d36;
+    --muted: #5c736a;
+    --line: #d5e4d9;
+    --surface: #fffffb;
+    --green: #276749;
+    --green-dark: #1e523b;
+    --gold: #e8bc58;
+    --radius: 16px;
+    --shadow: 0 8px 24px #25473812;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--text);
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background:
+            radial-gradient(ellipse at top left, #fff3cf, transparent 48%),
+            linear-gradient(145deg, #fbfcf3, #e6f2e7);
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button,
+a,
+input {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline: 3px solid #4b9273;
+    outline-offset: 2px;
+}
+
+button {
+    min-height: 36px;
+    padding: 7px 13px;
+    border: 1px solid #cfdfd4;
+    border-radius: 9px;
+    color: var(--text);
+    background: #f8fbf7;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+button:not(:disabled):hover {
+    border-color: #88b49b;
+    background: #eaf5ed;
+}
+
+button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+header,
+main,
+footer {
+    width: min(var(--page-width), calc(100% - 32px));
+    margin-inline: auto;
+}
+
+/* 상단 메뉴 */
+header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+header nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+header nav form {
+    margin: 0;
+}
+
+header nav li:first-child button {
+    border-color: var(--green-dark);
+    color: #fff;
+    background: var(--green);
+}
+
+header nav li > span {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 999px;
+    color: var(--green-dark);
+    background: #e6f2e8;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+header > div > button {
+    border-color: #e6c2b9;
+    color: #95493e;
+    background: #fff5f2;
+    font-size: 12px;
+}
+
+header > div > button:not(:disabled):hover {
+    border-color: #d99587;
+    background: #ffeae4;
+}
+
+/* 메인: 방 목록 + 대표 캐릭터 + 바로가기 */
+main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(215px, 24vw, 270px);
+    grid-template-areas:
+        "toolbar profile"
+        "rooms   profile"
+        "rooms   quick";
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 14px;
+    margin-block: 18px;
+}
+
+main > div,
+footer > div {
+    min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+/* 방 검색 및 목록 버튼 */
+main > div:nth-child(1) {
+    grid-area: toolbar;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+}
+
+main h2 {
+    flex-basis: 100%;
+    margin: 0 0 5px;
+    font-size: 22px;
+    letter-spacing: -0.04em;
+}
+
+#search-input,
+#msg {
+    flex: 1 1 160px;
+    min-width: 0;
+    min-height: 38px;
+    padding: 8px 11px;
+    border: 1px solid #ccddd1;
+    border-radius: 9px;
+    color: var(--text);
+    background: #fbfdf9;
+}
+
+#search-input::placeholder,
+#msg::placeholder {
+    color: var(--muted);
+}
+
+#createRoom_btn {
+    border-color: #d5a447;
+    color: #573b12;
+    background: linear-gradient(#ffedaf, var(--gold));
+    font-weight: 900;
+}
+
+#createRoom_btn:not(:disabled):hover {
+    border-color: #bf9031;
+    background: #ffe49b;
+}
+
+/* 방 목록: 표를 감싼 div에서 스크롤 */
+main > div:nth-child(2) {
+    grid-area: rooms;
+    min-height: 260px;
+    max-height: 420px;
+    overflow: auto;
+    scrollbar-color: #a9c7b4 #f0f6ef;
+    scrollbar-width: thin;
+}
+
+#room-table {
+    width: 100%;
+    min-width: 500px;
+    border-spacing: 0;
+    table-layout: fixed;
+    font-size: 14px;
+}
+
+#room-table :is(td, th) {
+    padding: 11px 12px;
+    overflow: hidden;
+    border-bottom: 1px solid #e6eee6;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#room-table :is(td, th):first-child {
+    width: 38%;
+    text-align: left;
+}
+
+#room-table :is(td, th):nth-child(2) {
+    width: 20%;
+}
+
+/* 현재 HTML의 첫 행과 나중에 thead를 쓰는 경우 모두 지원 */
+#room-table > tbody:first-of-type > tr:first-child > td,
+#room-table > thead > tr > th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    color: var(--green-dark);
+    background: #e8f3e9;
+    font-weight: 900;
+}
+
+#room-table tr:hover > td {
+    background: #f4f9f3;
+}
+
+#room-table button {
+    display: block;
+    min-height: 30px;
+    margin: 6px auto;
+    padding: 4px 12px;
+    border-color: var(--green-dark);
+    color: #fff;
+    background: var(--green);
+    font-size: 13px;
+}
+
+#room-table button:not(:disabled):hover {
+    border-color: var(--green-dark);
+    background: var(--green-dark);
+}
+
+/* 대표 캐릭터 한 장 */
+main > div:nth-child(4) {
+    grid-area: profile;
+    display: grid;
+    grid-template-areas:
+        "title"
+        "portrait"
+        "name";
+    grid-template-rows: auto minmax(140px, 1fr) auto;
+    justify-items: center;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    background: linear-gradient(155deg, #fff9e8, #fffef9 68%);
+}
+
+main > div:nth-child(4)::before {
+    grid-area: title;
+    content: "내 캐릭터";
+    color: #79571f;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+#useCharacterCard {
+    grid-area: portrait;
+    display: block;
+    width: min(100%, 164px);
+    height: clamp(145px, 16vw, 190px);
+    padding: 5px;
+    border: 1px solid #e0bf77;
+    border-radius: 12px;
+    background: #fffdf3;
+    object-fit: contain;
+}
+
+/* 아직 대표 이미지가 연결되지 않은 상태 */
+#useCharacterCard:is([src="#"], [src=""], :not([src])) {
+    display: none;
+}
+
+main > div:nth-child(4):has(
+    > #useCharacterCard:is([src="#"], [src=""], :not([src]))
+)::after {
+    grid-area: portrait;
+    display: grid;
+    width: min(100%, 164px);
+    min-height: 140px;
+    padding: 12px;
+    place-items: center;
+    border: 1px dashed #cfb278;
+    border-radius: 12px;
+    color: #79633e;
+    background: #fffdf6;
+    content: "대표 캐릭터 이미지";
+    font-size: 13px;
+    text-align: center;
+}
+
+main > div:nth-child(4) > label {
+    grid-area: name;
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 바로가기 */
+#quick-menu {
+    grid-area: quick;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px;
+}
+
+#quick-menu > a {
+    display: grid;
+    grid-template-rows: 42px auto;
+    place-items: center;
+    gap: 5px;
+    min-width: 0;
+    padding: 9px 4px;
+    border: 1px solid #dbe8dd;
+    border-radius: 11px;
+    color: var(--text);
+    background: #f5faf4;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+}
+
+#quick-menu > a:hover {
+    border-color: #8fbb9f;
+    background: #e9f5eb;
+}
+
+#quick-menu img {
+    display: block;
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+}
+
+#quick-menu img:is([src="#"], [src=""], :not([src])) {
+    display: none;
+}
+
+#quick-menu > a:has(> img:is([src="#"], [src=""], :not([src])))::before {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 10px;
+    background: #e6efe4;
+    content: "·";
+    font-size: 24px;
+}
+
+#quick-menu > a:nth-child(2):has(> img:is([src="#"], [src=""], :not([src])))::before {
+    content: "🎲";
+}
+
+#quick-menu > a:nth-child(4):has(> img:is([src="#"], [src=""], :not([src])))::before {
+    content: "🛒";
+}
+
+/* 공지사항과 실시간 채팅 */
+footer {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) minmax(0, 2fr);
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+footer > div {
+    padding: 15px;
+}
+
+footer h3 {
+    margin: 0 0 10px;
+    color: var(--green-dark);
+    font-size: 16px;
+}
+
+#chat_box {
+    height: 165px;
+    padding: 10px 12px;
+    overflow-y: auto;
+    border: 1px solid #dce8dc;
+    border-radius: 10px;
+    background: #f6faf5;
+    font-size: 14px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    scrollbar-color: #a9c7b4 #f0f6ef;
+    scrollbar-width: thin;
+}
+
+#chat_box + div {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+#msg {
+    flex: 1 1 0;
+}
+
+#send {
+    flex: 0 0 auto;
+    border-color: var(--green-dark);
+    color: #fff;
+    background: var(--green);
+}
+
+#send:not(:disabled):hover {
+    border-color: var(--green-dark);
+    background: var(--green-dark);
+}
+
+/* 모바일 */
+@media (max-width: 760px) {
+    header,
+    main,
+    footer {
+        width: calc(100% - 20px);
+    }
+
+    header {
+        margin-top: 10px;
+        padding: 10px;
+    }
+
+    main {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        grid-template-areas:
+            "toolbar"
+            "rooms"
+            "quick"
+            "profile";
+    }
+
+    main > div:nth-child(1) {
+        padding: 12px;
+    }
+
+    #search-input {
+        flex-basis: 100%;
+    }
+
+    main > div:nth-child(2) {
+        max-height: 340px;
+    }
+
+    #quick-menu {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        padding: 8px;
+    }
+
+    footer {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
