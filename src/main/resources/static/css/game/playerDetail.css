@@ -192,3 +192,30 @@ main > button:focus-visible {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
+
+
+.item-trigger {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+#itemSkillDetail {
+    grid-column: 1 / -1;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #101a28;
+    font-size: 0.875rem;
+}
+
+#itemSkillDetail strong {
+    color: var(--gold);
+}
+
+#itemSkillDetail p {
+    margin: 4px 0 0;
+    line-height: 1.5;
+}

@@ -11,8 +11,17 @@
         <div>
             <div id="items">
                 <ul th:each="equipItem : ${playerDetail.equipItems}">
-                    <li id="itemImage"><img th:src="${equipItem.imagePath}" th:alt="${equipItem.itemName}"></li>
+                    <li id="itemImage">
+                        <button type="button" class="item-trigger" aria-expanded="false"
+                                th:attr="data-item-name=${equipItem.itemName}, data-skill-description=${equipItem.itemDescription}">
+                        <img th:src="${equipItem.imagePath}" th:alt="${equipItem.itemName}">
+                        </button>
+                    </li>
                 </ul>
+                <div id="itemSkillDetail" hidden="hidden">
+                    <strong id="itemSkillName"></strong>
+                    <p id="itemSkillDescription"></p>
+                </div>
             </div>
 
             <div>
@@ -34,10 +43,30 @@
 
 <script>
     const button = document.getElementById("closeBtn")
+    const items = document.getElementById("items");
+    const detail = document.getElementById("itemSkillDetail");
+    const skillName = document.getElementById("itemSkillName");
+    const skillDescription = document.getElementById("itemSkillDescription");
 
     button.addEventListener("click", () => {
         window.close();
     })
+
+    items.addEventListener("click",(event) => {
+        const button = event.target.closest(".item-trigger");
+        if(!button) return;
+
+        showItemSkill(button);
+    })
+
+    function showItemSkill(button) {
+        detail.hidden = true;
+
+        skillName.textContent = button.dataset.itemName;
+        skillDescription.textContent = button.dataset.skillDescription || "스킬 설명이 없습니다.";
+
+        detail.hidden = false;
+    }
 </script>
 </body>
 </html>
