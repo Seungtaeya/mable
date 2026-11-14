@@ -465,7 +465,7 @@ public class GameService {
     }
 
     @Transactional
-    public void turnChange(Long gameId, String userName) {
+    public TurnChangedResponse turnChange(Long gameId, String userName) {
         List<GamePlayer> players = gamePlayerRepository.findByGame_IdOrderByTurnOrderAsc(gameId);
         GamePlayer currentPlayer = gamePlayerRepository.findByGameIdAndUsername(gameId, userName);
         Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
@@ -484,10 +484,10 @@ public class GameService {
 
                game.changePhase(GamePhase.Waiting_FOR_DICE);
                game.modifyCurrentPlayerId(nextPlayer.getId());
-//               return new TurnChangedResponse(currentPlayer.getUser().getId(), nextPlayer.getId());
+               return new TurnChangedResponse(currentPlayer.getUser().getId(), nextPlayer.getId());
            }
         }
-//        throw new IllegalStateException("다음 턴을 진행할 플레이어를 찾지 못했습니다.");
+        throw new IllegalStateException("다음 턴을 진행할 플레이어를 찾지 못했습니다.");
     }
 
     @Transactional

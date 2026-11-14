@@ -47,7 +47,6 @@ async function requestDrawCards(premium) {
 function renderCards(cards) {
     renderCardsDiv.replaceChildren();
 
-    if(cards !== null) {
         cards.forEach(card => {
             const image = document.createElement("img");
 
@@ -58,7 +57,6 @@ function renderCards(cards) {
 
             renderCardsDiv.appendChild(image);
         })
-    }
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = "닫기";

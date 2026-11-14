@@ -1,0 +1,194 @@
+:root {
+    color-scheme: dark;
+    --panel: #182334;
+    --line: #35465d;
+    --text: #f4f7fc;
+    --muted: #adbdd1;
+    --gold: #ffd28a;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    color: var(--text);
+    background: radial-gradient(ellipse at top, #283b56, #101722 70%);
+    font-family: system-ui, sans-serif;
+}
+
+main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #111b29;
+    box-shadow: 0 14px 35px #0005;
+}
+
+main > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    grid-template-areas: "character items";
+    align-items: start;
+    gap: 14px;
+}
+
+main > div > div:last-child,
+#items {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+}
+
+main > div > div:last-child {
+    grid-area: character;
+}
+
+#characterName {
+    display: block;
+    margin-bottom: 12px;
+    color: var(--gold);
+    font-size: 1.25rem;
+    font-weight: 800;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+#characterImage {
+    display: block;
+    width: 100%;
+    height: clamp(190px, 42vh, 300px);
+    padding: 8px;
+    border-radius: 10px;
+    background: radial-gradient(ellipse at center, #3b516b, #151e2b 75%);
+    object-fit: contain;
+}
+
+#characterSkill {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+#characterSkill ul,
+#items ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#characterSkill li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #101a28;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#characterSkill img {
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+}
+
+#items {
+    grid-area: items;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+#items::before {
+    content: "장착 아이템";
+    grid-column: 1 / -1;
+    color: var(--gold);
+    font-weight: 800;
+}
+
+#items:not(:has(li))::after {
+    content: "장착한 아이템이 없습니다.";
+    grid-column: 1 / -1;
+    padding: 10px 0;
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+#items li {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #0f1825;
+    transition: border-color 150ms, background-color 150ms;
+}
+
+#items li:hover,
+#items li:focus-within {
+    border-color: var(--gold);
+    background: #26364c;
+}
+
+#items img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 74px;
+    object-fit: contain;
+}
+
+main > button {
+    display: block;
+    width: 100%;
+    margin-top: 14px;
+    padding: 10px 16px;
+    border: 1px solid #516686;
+    border-radius: 10px;
+    color: var(--text);
+    background: #2b3f5b;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+main > button:hover {
+    background: #3a5374;
+}
+
+main > button:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+}
+
+@media (max-width: 440px) {
+    body {
+        padding: 10px;
+    }
+
+    main {
+        padding: 12px;
+    }
+
+    main > div {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "character" "items";
+    }
+
+    #items {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}

@@ -16,7 +16,8 @@ function lobby() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadRooms()
+    loadRooms();
+    useCharacterCard();
 })
 
 async function loadRooms() {
@@ -41,6 +42,24 @@ async function loadRooms() {
 
 }
 
+async function useCharacterCard() {
+    const response = await fetch("/api/users/me/selected-character-card", {
+        method: "GET"
+    });
+
+    const characterCard = await response.json();
+    if(characterCard.charactersCount !== 0) {
+        if (!response.ok) {
+            alert("사용자가 선택한 캐릭터 카드를 가져오는데 실패 했습니다.");
+            return;
+        }
+    }
+
+    const useCharacter = document.getElementById("useCharacterCard");
+    console.log(characterCard.imagePath)
+    useCharacter.src = characterCard.imagePath;
+    useCharacter.alt = characterCard.characterName;
+}
 async function joinGameRoom(roomId) {
     console.log(roomId)
     try{

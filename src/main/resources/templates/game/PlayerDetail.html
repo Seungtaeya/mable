@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/game/playerDetail.css">
+    <title>유저 상세 화면</title>
+</head>
+<body>
+    <main>
+        <div>
+            <div id="items">
+                <ul th:each="equipItem : ${playerDetail.equipItems}">
+                    <li id="itemImage"><img th:src="${equipItem.imagePath}" th:alt="${equipItem.itemName}"></li>
+                </ul>
+            </div>
+
+            <div>
+                <span id="characterName" th:text="${playerDetail.characterName}"></span>
+                <img id="characterImage" th:src="${playerDetail.characterImagePath}">
+
+                <div id="characterSkill">
+                    <ul th:each="skill : ${playerDetail.characterSkills}">
+                        <li> <img th:src="@{${skill.imagePath()}}" alt="캐릭터 스킬">
+                            <span th:text="@{${skill.skillDescription()}}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <button id="closeBtn" type="button">닫기</button>
+    </main>
+
+<script>
+    const button = document.getElementById("closeBtn")
+
+    button.addEventListener("click", () => {
+        window.close();
+    })
+</script>
+</body>
+</html>

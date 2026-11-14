@@ -3,7 +3,6 @@ const gameId = Number(document.body.dataset.gameId);
 const playerCard = document.getElementById("player-Card");
 const turnOrderDiv = document.getElementById("turnOrderButtons");
 const lobbyBtn = document.getElementById("lobbyBtn");
-
 const propertyPlayerColors = ["#60b7ee", "#f29583", "#b69aef", "#7fd39c"];
 const propertyColorByPlayerId = new Map();
 const defaultPropertyColor = "#b6c2cc";
@@ -12,6 +11,11 @@ const defaultPropertyColor = "#b6c2cc";
 document.addEventListener("DOMContentLoaded",() => {
     getMap();
     turnOrderButton();
+})
+
+playerCard.addEventListener("click",  (event) => {
+    const playerId = event.target.closest(".player-card").dataset.playerId;
+    window.open(`/playerCardDetail/${playerId}`, "유저 상세 화면", "width=600 height=700");
 })
 
 async function turnOrderButton() {
@@ -151,6 +155,7 @@ function renderPlayers(players) {
         cashLabel.className = "cashLabel"
         li.className = "player-card";
         li.dataset.turnOrder = player.turnOrder;
+        li.dataset.playerId= player.playerId;
 
         playerName.textContent = player.userName;
         cashLabel.textContent = "보유머니";
@@ -163,8 +168,6 @@ function renderPlayers(players) {
         img.style.height = "100px";
 
         rankLabel.textContent = player.turnOrder + 1
-
-        // renderPlayerPieceOnTile(player, 0);
 
         cashLabel.append(playerCash, img,rankLabel);
         li.append(playerName, cashLabel);

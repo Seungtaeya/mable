@@ -268,3 +268,12 @@
         height: 34px;
     }
 }
+
+#players {
+    pointer-events: none;
+}
+
+#player-Card > .player-card {
+    pointer-events: auto;
+    cursor: pointer;
+}

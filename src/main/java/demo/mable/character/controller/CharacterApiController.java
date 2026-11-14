@@ -39,6 +39,12 @@ public class CharacterApiController {
         return ResponseEntity.ok().body(uc);
     }
 
+    @GetMapping("/users/me/selected-character-card")
+    public ResponseEntity<CharacterCardForLobbyResponse> getCharacterCardForLobby(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        CharacterCardForLobbyResponse selectedCharacterCard = userCharacterService.findSelectedCharacterCardByUserId(userDetails.getUserId());
+        return ResponseEntity.ok(selectedCharacterCard);
+    }
+
     @PostMapping("/users/me/selected-character")
     public ResponseEntity<Void> selectCharacter(@RequestBody CharacterSelectRequest select, @AuthenticationPrincipal CustomUserDetails userDetails) {
         if(userCharacterService.findExistsByUserId(userDetails.getUserId())){

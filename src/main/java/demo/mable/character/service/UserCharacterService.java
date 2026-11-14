@@ -53,6 +53,11 @@ public class UserCharacterService {
         return UserCharacters.stream().map(UserCharactersResponse::from).toList();
     }
 
+    public CharacterCardForLobbyResponse findSelectedCharacterCardByUserId(Long userId) {
+        int charactersCount = userCharacterRepository.findByUser_Id(userId).size();
+        UserSelectedCharacter userSelectedCharacter = userSelecteCharacterRespository.findByUserId(userId).orElseThrow(UserSelectedCharacterNotFoundException::new);
+        return CharacterCardForLobbyResponse.from(userSelectedCharacter.getUserCharacter().getCharacter().getCharacterName(), userSelectedCharacter.getUserCharacter().getCharacter().getImagePath(), charactersCount);
+    }
     @Transactional
     public UserSelectedCharacter selectCharacter(Long userId, Long characterId) {
         List<UserCharacter> byStatus = userCharacterRepository.findByStatus(UserCharacterStatus.SELECTED);

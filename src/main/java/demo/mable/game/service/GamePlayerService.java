@@ -1,6 +1,8 @@
 package demo.mable.game.service;
 
+import demo.mable.character.dto.SkillResponse;
 import demo.mable.game.dto.FirstTurnResponse;
+import demo.mable.game.dto.GamePlayerDetailResponse;
 import demo.mable.game.dto.GamePlayerResponse;
 import demo.mable.game.entity.Game;
 import demo.mable.game.entity.GamePlayer;
@@ -14,6 +16,8 @@ import demo.mable.game.repository.GamePlayerRepository;
 import demo.mable.game.repository.GamePropertiesRepository;
 import demo.mable.game.repository.GameRepository;
 import demo.mable.game.repository.TurnOrderRepo;
+import demo.mable.luckyItem.dto.EquipItemResponse;
+import demo.mable.luckyItem.repository.UserSelectLuckyItemRepository;
 import demo.mable.user.entity.User;
 import demo.mable.user.exception.UserNotFoundException;
 import demo.mable.user.repository.UserRepository;
@@ -34,6 +38,7 @@ public class GamePlayerService {
     public final TurnOrderRepo turnOrderRepo;
     private final UserRepository userRepository;
     private final GamePropertiesRepository gamePropertiesRepository;
+    private final UserSelectLuckyItemRepository userSelectLuckyItemRepository;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
@@ -44,6 +49,17 @@ public class GamePlayerService {
     public int getPlayerCount(Long gameId) {
         List<GamePlayer> byGameId = gamePlayerRepository.findByGame_Id(gameId);
         return byGameId.size();
+    }
+
+    public GamePlayerDetailResponse findPlayerDetailByUserIdAndPlayerId(Long playerId) {
+
+        GamePlayerDetailResponse playerDetails = gamePlayerRepository.findPlayerDetailByPlayerId(playerId);
+        List<SkillResponse> characterSkills = gamePlayerRepository.findCharacterSkillsByCharacterId(playerDetails.getCharacterId());
+        List<EquipItemResponse> equipItems = userSelectLuckyItemRepository.findEquipItemByUserId(playerDetails.getUserId());
+        playerDetails.setCharacterSkills(characterSkills);
+        playerDetails.setEquipItems(equipItems);
+
+        return playerDetails;
     }
 
     public FirstTurnResponse getCurrentPlayerIdByGameId(Long gameId, Integer firstCardIndex) {

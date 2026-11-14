@@ -2,11 +2,7 @@ package demo.mable.game.controller;
 
 import demo.mable.character.dto.UserCharactersResponse;
 import demo.mable.character.service.UserCharacterService;
-import demo.mable.game.dto.BoardTileDefinition;
-import demo.mable.game.dto.GamePlayerResponse;
-import demo.mable.game.dto.Map;
-import demo.mable.game.dto.UnbuiltBuildingTypesResponse;
-import demo.mable.game.entity.GamePlayer;
+import demo.mable.game.dto.*;
 import demo.mable.game.enums.BuildingType;
 import demo.mable.game.enums.TileType;
 import demo.mable.game.exception.TileNotFoundException;
@@ -15,10 +11,8 @@ import demo.mable.game.service.TileService;
 import demo.mable.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -111,5 +105,13 @@ public class BoardController {
         model.addAttribute("tileId", tileId);
         model.addAttribute("LANDMARK", BuildingType.LANDMARK);
         return "game/skill-construction";
+    }
+
+    @GetMapping("/playerCardDetail/{playerId}")
+    public String playerCardDetails(@PathVariable Long playerId, Model model) {
+        GamePlayerDetailResponse playerDetail= gamePlayerService.findPlayerDetailByUserIdAndPlayerId(playerId);
+
+        model.addAttribute("playerDetail", playerDetail);
+        return "game/PlayerDetail";
     }
 }
