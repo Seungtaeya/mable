@@ -55,3 +55,4 @@
 또한 mySql에서 EXPLAIN으로 실행계획 확인 key에는 직접 만든 인덱스가 들어가있는걸 확인 Extra에는 Using index가 들어가있는걸 확인 game_results는 원본 행을 추가로 읽지 않고 인덱스에서 필요한 값을 조회 하는걸 검증 했습니다.  
 <img src="./readme-media/index.png" alt="인덱스 처리 시간" width="500">
 <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/0b95ec03-2037-410b-97aa-18a11359c69c" />
+<img src="./readme-media/04-character-change-and-synthesis.gif" alt="장착 캐릭터 변경과 카드 두 장 합성 시연" width="600">
