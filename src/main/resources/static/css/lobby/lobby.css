@@ -233,8 +233,8 @@ main > div:nth-child(2) {
 }
 
 /* 현재 HTML의 첫 행과 나중에 thead를 쓰는 경우 모두 지원 */
-#room-table > tbody:first-of-type > tr:first-child > td,
-#room-table > thead > tr > th {
+/* 헤더만 스크롤할 때 상단에 고정 */
+#room-table > thead > tr > :is(td, th) {
     position: sticky;
     top: 0;
     z-index: 1;
@@ -243,7 +243,8 @@ main > div:nth-child(2) {
     font-weight: 900;
 }
 
-#room-table tr:hover > td {
+/* 방 목록의 행에만 마우스 오버 효과 */
+#room-list > tr:hover > td {
     background: #f4f9f3;
 }
 

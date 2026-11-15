@@ -1,0 +1,220 @@
+:root {
+    --text: #263d36;
+    --muted: #5c736a;
+    --line: #d5e4d9;
+    --surface: #fffffb;
+    --green: #276749;
+    --green-dark: #1e523b;
+    --radius: 16px;
+    --shadow: 0 8px 24px #25473812;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--text);
+    background:
+            radial-gradient(ellipse at top left, #fff3cf, transparent 48%),
+            linear-gradient(145deg, #fbfcf3, #e6f2e7);
+    font: 14px/1.5 "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+}
+
+/* 상단 메뉴 */
+header {
+    width: min(1280px, calc(100% - 32px));
+    margin: 18px auto 0;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+header nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+header form {
+    margin: 0;
+}
+
+header nav li > span {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 999px;
+    color: var(--green-dark);
+    background: #e6f2e8;
+    font-weight: 800;
+}
+
+/* 상단 메뉴와 페이지 이동 버튼 */
+header button,
+main > div:nth-child(2) > :is(button, a) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 6px 12px;
+    border: 1px solid #cfdfd4;
+    border-radius: 9px;
+    color: var(--text);
+    background: #f8fbf7;
+    font: inherit;
+    font-weight: 750;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+header button:hover,
+main > div:nth-child(2) > :is(button, a):hover {
+    border-color: #88b49b;
+    background: #eaf5ed;
+}
+
+header nav li:nth-child(2) > button {
+    border-color: var(--green-dark);
+    color: #fff;
+    background: var(--green);
+}
+
+:where(button, a):focus-visible {
+    outline: 3px solid #4b9273;
+    outline-offset: 2px;
+}
+
+/* 전체 순위 */
+main {
+    width: min(820px, calc(100% - 32px));
+    margin: 24px auto 36px;
+}
+
+main > div:first-child {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+main h3 {
+    margin: 0;
+    padding: 15px 18px;
+    color: var(--green-dark);
+    font-size: 22px;
+    letter-spacing: -.04em;
+}
+
+main table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+main table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid #e6eee6;
+}
+
+/* HTML의 thead 안에 있는 td 세 개 */
+main thead {
+    color: var(--green-dark);
+    background: #e8f3e9;
+    font-weight: 800;
+}
+
+main thead td:first-child {
+    width: 20%;
+}
+
+main thead td:last-child {
+    width: 26%;
+}
+
+main table td:first-child {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+main table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+#users td:first-child {
+    color: var(--muted);
+}
+
+#users td:nth-child(2) {
+    overflow-wrap: anywhere;
+    font-weight: 750;
+}
+
+#users td:last-child {
+    font-weight: 750;
+}
+
+#users > tr:nth-child(even) {
+    background: #fbfdf9;
+}
+
+#users > tr:hover {
+    background: #eef7ed;
+}
+
+#users > tr:last-child > td {
+    border-bottom: 0;
+}
+
+/* 이전 · 페이지 번호 · 다음 */
+main > div:nth-child(2) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 14px;
+}
+
+main > div:nth-child(2) > a {
+    min-width: 36px;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 480px) {
+    header,
+    main {
+        width: calc(100% - 20px);
+    }
+
+    header {
+        margin-top: 10px;
+        padding: 10px;
+    }
+
+    main {
+        margin-top: 16px;
+    }
+
+    main h3 {
+        padding-inline: 12px;
+    }
+
+    main table td {
+        padding-inline: 9px;
+    }
+
+    main thead td:last-child {
+        width: 30%;
+    }
+}

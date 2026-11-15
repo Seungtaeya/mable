@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>랭킹</title>
+    <link rel="stylesheet" href="/css/lobby/ranking.css">
+</head>
+<body>
+<header>
+    <nav>
+        <ul>
+            <li>
+                <button type="submit"><a th:href="@{/lobby}">로비</a></button>
+            </li>
+
+            <li><button type="button">랭킹</button></li>
+            <li th:if="${username != null}">
+                <span th:text="${username + '님'}"></span>
+            </li>
+
+            <li><button type="button">설정</button></li>
+            <li>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit">로그아웃</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+</header>
+
+<main>
+
+    <div>
+        <h3>전체 순위</h3>
+        <table>
+            <thead>
+                <tr>
+                    <td>순위</td>
+                    <td>닉네임</td>
+                    <td>승리 횟수</td>
+                </tr>
+            </thead>
+            <tbody id="users">
+                <tr th:each="ranking : ${rankings}">
+                    <td th:text="${ranking.ranking}"></td>
+                    <td th:text="${ranking.userName}"></td>
+                    <td th:text="${ranking.victoryCount}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${totalPage > 0}">
+        <a th:if="${page > 0}" th:href="@{/ranking(page=${page - 1})}">이전</a>
+        <a th:each="page : ${#numbers.sequence(startPage, endPage)}" th:href="@{/ranking(page=${page})}" th:text="${page}">
+        </a>
+        <a  th:if="${page + 1 < totalPage}" th:href="@{/ranking(page=${page + 1})}">다음</a>
+    </div>
+</main>
+</body>
+</html>

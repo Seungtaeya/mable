@@ -2,15 +2,24 @@ const createRoomBtn = document.getElementById("createRoom_btn");
 const roomId = document.getElementById("hidden_roomId");
 const joinBtn = document.getElementById("joinBtn");
 const roomTable = document.getElementById("room-table");
-
+const roomName = document.getElementById("search-input");
+const roomList = document.getElementById("room-list");
+const ranking = document.getElementById("rankingBtn");
 const csrfToken = document.querySelector('meta[name="_csrf"]').content;
 const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
 createRoomBtn.addEventListener('click',() =>{
     lobby();
 });
-
-
+ranking.addEventListener("click", () => {
+    window.location.href = "/ranking";
+})
+roomName.addEventListener("keydown", (key) => {
+    if(key.key === "Enter" && !key.isComposing) {
+        key.preventDefault();
+        searchRoomName();
+    }
+})
 function lobby() {
     window.open('/room','방만들기 팝업', 'width=700px, height=800px');
 }
@@ -104,8 +113,20 @@ async function clearAllRoomsByAdmin() {
 
 }
 
-function renderRooms(rooms) {
+async function searchRoomName() {
+    const response = await fetch(`/api/search/rooms/${roomName.value}`)
 
+    if(!response.ok) {
+        alert("검색 실패");
+        return;
+    }
+
+    const rooms = await response.json();
+    roomList.replaceChildren();
+    renderRooms(rooms);
+}
+
+function renderRooms(rooms) {
 
     rooms.forEach((room) => {
         const tr = document.createElement("tr");
@@ -132,7 +153,7 @@ function renderRooms(rooms) {
         tr.appendChild(joinBtn);
         tr.appendChild(roomId);
 
-        roomTable.appendChild(tr);
+        roomList.appendChild(tr);
     })
     roomTable.scrollTop = 0;
 

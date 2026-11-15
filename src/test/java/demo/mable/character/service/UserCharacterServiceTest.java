@@ -4,8 +4,10 @@ import demo.mable.character.dto.UserCharactersResponse;
 import demo.mable.character.entity.UserSelectedCharacter;
 import demo.mable.character.repository.UserCharacterRepository;
 import demo.mable.character.repository.UserSelecteCharacterRespository;
+import demo.mable.user.dto.UserRankingResponse;
 import demo.mable.user.entity.User;
 import demo.mable.user.repository.UserRepository;
+import demo.mable.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +20,8 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 class UserCharacterServiceTest {
 
+    @Autowired
+    UserService userService;
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -50,5 +54,15 @@ class UserCharacterServiceTest {
 //        assertThat(us.getCharacter().getId()).isEqualTo(1L);
 //        assertThat(us.getCharacter().getCharacterName()).isEqualTo("프시케");
 
+    }
+
+    @Test
+    public void ranking() throws Exception {
+        //given
+        List<UserRankingResponse> rankings = userService.getRankings(0);
+        //when
+
+        //then
+        assertThat(rankings.getFirst().getVictoryCount()).isEqualTo(2);
     }
 }

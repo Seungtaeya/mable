@@ -19,7 +19,7 @@
                <button type="button">로비</button>
             </li>
 
-            <li><button type="button">랭킹</button></li>
+            <li><button type="button" id="rankingBtn">랭킹</button></li>
             <li th:if="${username != null}">
                 <span th:text="${username + '님'}"></span>
             </li>
@@ -52,13 +52,18 @@
 
     <div>
         <table id="room-table">
-            <tr>
-                <td>방제목</td>
-                <td>방장</td>
-                <td>인원</td>
-                <td>상태</td>
-                <td>입장</td>
-            </tr>
+            <thead>
+                <tr>
+                    <td>방제목</td>
+                    <td>방장</td>
+                    <td>인원</td>
+                    <td>상태</td>
+                    <td>입장</td>
+                </tr>
+            </thead>
+            <tbody id="room-list">
+
+            </tbody>
         </table>
     </div>
 

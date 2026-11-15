@@ -7,7 +7,6 @@ import demo.mable.room.service.RoomPlayerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.converter.SimpleMessageConverter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -23,6 +22,12 @@ public class RoomApiController {
     private final GameRoomService gameRoomService;
     private final RoomPlayerService roomPlayerService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+
+    @GetMapping("/search/rooms/{roomName}")
+    public ResponseEntity<List<GameRoomResponse>> searchRooms(@PathVariable String roomName) {
+        List<GameRoomResponse> rooms = gameRoomService.findRoomsByRoomName(roomName);
+        return ResponseEntity.ok(rooms);
+    }
 
     @GetMapping("/rooms")
     public ResponseEntity<List<GameRoomResponse>> getRooms() {

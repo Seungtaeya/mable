@@ -42,6 +42,11 @@ public class GameRoomService {
     private final GamePlayerRepository gamePlayerRepository;
     private final TurnOrderRepo turnOrderRepo;
 
+
+    public List<GameRoomResponse> findRoomsByRoomName(String roomName) {
+        return gameRoomRepository.findAllByTitleContaining(roomName).stream().map(GameRoomResponse::from).toList();
+    }
+
     @Transactional
     public Long createGameRoom(Long hostUser, GameRoomRequest request) {
 

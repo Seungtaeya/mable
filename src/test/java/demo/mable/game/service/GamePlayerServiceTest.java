@@ -14,7 +14,7 @@ class GamePlayerServiceTest {
     @Test
     public void findPlayerDetailsByPlayerId() throws Exception {
         //given
-        gamePlayerService.findPlayerDetailByUserIdAndPlayerId(59L, 1157L);
+        gamePlayerService.findPlayerDetailByUserIdAndPlayerId(1157L);
         //when
         
         //then
