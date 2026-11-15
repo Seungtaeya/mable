@@ -48,7 +48,9 @@
 <img src="./readme-media/02-train-travel.gif" alt="첫 주사위와 말 이동" width="600">
 <img src="./readme-media/03-item-and-acquisition.gif" alt="첫 주사위와 말 이동" width="600">
 
+## 성능 개선
 #### 유저 랭킹 인덱스 처리
 테스트용으로 넣은 데이터 1000만건을 조회하는 페이지에서 응답지연을 확인 후 브라우저의 요청 시간과 sql 직접 실행 시간을 나눠서 측정.   
-인덱스 적용 후 동일한 sql 실행 시간은 40초에서 3초로 줄었으며, 웹 요청 시간은 40.65 -> 4.12초로 줄어든걸 확인했습니다.
+인덱스 유저 조인데 사용하는 userId와 승리 판별에 사용하는 is_winner를 묶어 game_results(user_id, is_winner) 복합 인덱스로 만들어  동일한 sql 실행 시간은 40초에서 3초로 줄었으며, 웹 요청 시간은 40.65 -> 4.12초로 줄어든걸 확인했습니다.          
+또한 mySql에서 EXPLAIN으로 실행계획 확인 key에는 직접 만든 인덱스가 들어가있는걸 확인 Extra에는 Using index가 들어가있는걸 확인 game_results는 원본 행을 추가로 읽지 않고 인덱스에서 필요한 값을 조회 하는걸 검증 했습니다.  
 <img src="./readme-media/index.png" alt="인덱스 처리 시간" width="500">
