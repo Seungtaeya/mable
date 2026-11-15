@@ -164,7 +164,8 @@ async function loadCharacterSynthesisView() {
         });
 
         if (!response.ok) {
-            alert("합성 데이터를 서버에 전송 실패");
+            const error = await response.json().catch(() => null);
+            alert(error.message);
             return;
         }
 
