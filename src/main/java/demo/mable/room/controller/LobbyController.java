@@ -28,12 +28,7 @@ public class LobbyController {
 
     @GetMapping("/lobby")
     public String robbyPage(@AuthenticationPrincipal CustomUserDetails customUserDetails, Model model) {
-
-//        List<GameRoomResponse> rooms = gameRoomService.getRooms();
-//        model.addAttribute("rooms", rooms);
         model.addAttribute("username",customUserDetails.getUsername());
-//        model.addAttribute("userId",customUserDetails.getUserId());
-
         return "room/lobby";
     }
 

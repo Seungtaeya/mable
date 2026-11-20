@@ -24,6 +24,11 @@ import demo.mable.game.skill.TollFreePassThenSkillHandler;
 import demo.mable.luckyItem.entity.UserSelectedLuckyItem;
 import demo.mable.luckyItem.exception.LuckyItemNotFoundException;
 import demo.mable.luckyItem.repository.UserSelectLuckyItemRepository;
+import demo.mable.room.entity.GameRoom;
+import demo.mable.room.enums.GameRoomStatus;
+import demo.mable.room.exception.GameRoomNotFoundException;
+import demo.mable.room.repository.GameRoomRepository;
+import demo.mable.room.repository.RoomPlayerRepository;
 import demo.mable.skill.enums.SkillCode;
 import demo.mable.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +51,7 @@ public class GameService {
     private final UserSelecteCharacterRespository userSelecteCharacterRespository;
     private final UserSelectLuckyItemRepository userSelectLuckyItemRepository;
     private final GameResultRepository gameResultRepository;
+    private final GameRoomRepository gameRoomRepository;
 
     @Transactional
     public PlayerMoveResult movePlayerCharacter(Long gameId, Integer targetSum, String userName){
@@ -58,7 +64,7 @@ public class GameService {
             throw new GameNotWaitingForDiceException();
         }
         if(!game.getCurrentPlayerId().equals(currentPlayer.getId())) {
-            throw new IllegalArgumentException("현재 턴 플레이어가 아닙니다.");
+            throw new NotCurrentTurnPlayerException();
         }
         List<UserSelectedLuckyItem> luckyItems = userSelectLuckyItemRepository.findByUser_Id(currentPlayer.getUser().getId());
         DiceRollSkillHandler diceRollSkillHandler = new DiceControlSkillHandler();
@@ -316,16 +322,16 @@ public class GameService {
         GamePlayer tollPayer = gamePlayerRepository.findByGameIdAndUsername(gameId,userName);
 
         if(!game.getPhase().equals(GamePhase.WAITING_FOR_TOLL_PAYMENT)) {
-            throw new IllegalArgumentException("현재 게임상태가 요청한 메서드가 원하는 게임 상태가 아닙니다.");
+            throw new InvalidGameStateException();
         }
         if(!tollPayer.getId().equals(request.getPlayerId())) {
-            throw new IllegalArgumentException("로그인한 플레이어랑 요청한 플레이어가 다릅니다.");
+            throw new AuthenticatedPlayerMismatchException();
         }
         if(!game.getCurrentPlayerId().equals(tollPayer.getId())) {
-            throw new IllegalArgumentException("현재턴 플레이어랑 요청자랑 다릅니다 확인해주세요.");
+            throw new NotCurrentTurnPlayerException();
         }
         if(!(tollPayer.getPosition() == request.getTileIndex())) {
-            throw new IllegalArgumentException("플레이어가 위치한 타일 번호랑 요청으로 넘어온 타일 번호가 같지않습니다.");
+            throw new PlayerNotOnTileException();
         }
 
         TollFreePassThenSkillHandler handler = new TollFreePassThenSkillHandler();
@@ -354,7 +360,7 @@ public class GameService {
         }
 
         if(tileOwner.getId().equals(tollPayer.getId())) {
-            throw new IllegalArgumentException("땅 주인은 통행료를 낼 수 없습니다.");
+            throw new PropertyOwnerCannotPayTollException();
         }
         // 통행료 계산
         double tollPaymentRate = userSelectedCharacter.getUserCharacter().getCharacter().getTollDiscount() / 100.0;
@@ -364,11 +370,21 @@ public class GameService {
         boolean isLandMark = tileInfo.isLandmark();
         // 파산 시 땅 주인은 땅 가격 그대로 입금, 땅 밟은사람은 파산
         if(tollPayer.getCash() < totalToPay) {
+            List<GamePlayer> players = gamePlayerRepository.findByGame_Id(gameId);
+            List<GameResult> gameResults = gameResultRepository.findAllByGame_Id(gameId);
+            int rankNo = players.size() - gameResults.size();
+
             tollPayer.payment(tollPayer.getCash());
             tollPayer.updatePlayerStatus(PlayerStatus.BANKRUPT);
             tollPayer.initConsecutiveDoubles();
             tileOwner.updataDiposit(totalToPay);
+
             gamePropertiesRepository.deleteAllByPlayer_Id(tollPayer.getId());
+
+            GameResult gameResult = new GameResult(rankNo, false, 0L, "파산");
+            gameResult.assignUser(tollPayer.getUser());
+            gameResult.assignGame(game);
+            gameResultRepository.save(gameResult);
 
             GameResultResponse gameFinish = finishGameIfOnlyOnePlayerRemains(game);
             TollCalculatedResponse BankruptResponse = TollCalculatedResponse.from(tileInfo.getTileId(), tileOwner.getId(), tileOwner.getCash(), tollPayer.getId(), tollPayer.getCash(), tollPayer.getPlayerStatus(), isLandMark);
@@ -403,7 +419,7 @@ public class GameService {
         Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
 
         if(!game.getPhase().equals(GamePhase.WAITING_FOR_BUILDING_ACQUISITION)) {
-            throw new IllegalArgumentException("현재 게임상태가 요청한 메서드가 원하는 게임 상태가 아닙니다.");
+            throw new InvalidGameStateException();
         }
         GamePlayer player = gamePlayerRepository.findById(request.getPlayerId()).orElseThrow(GamePlayerNotFoundException::new);
         GameProperties tile = gamePropertiesRepository.findByGameIdAndTileId(gameId, request.getTileId());
@@ -411,7 +427,7 @@ public class GameService {
         UserSelectedCharacter userSelectedCharacter = userSelecteCharacterRespository.findByUserId(player.getUser().getId()).orElseThrow(UserNotFoundException::new);
 
         if(player.getPosition() != request.getTileId()) {
-            throw new IllegalArgumentException("플레이어가 타일 위에 없습니다");
+            throw new PlayerNotOnTileException();
         }
 
         long acquisitionCost = tile.getConstructionCost() * 2;
@@ -457,7 +473,7 @@ public class GameService {
         GamePlayer player = gamePlayerRepository.findByGameIdAndUsername(gameId, userName);
 
         if(!player.getId().equals(playerId)) {
-            throw new IllegalArgumentException("게임에 참여한 플레이어와 요청보낸 플레이어가 다릅니다,");
+            throw new AuthenticatedPlayerMismatchException();
         }
         prepareNextRoll(game,player);
         GamePlayer nextPlayer = gamePlayerRepository.findById(game.getCurrentPlayerId()).orElseThrow(GamePlayerNotFoundException::new);
@@ -487,7 +503,7 @@ public class GameService {
                return new TurnChangedResponse(currentPlayer.getUser().getId(), nextPlayer.getId());
            }
         }
-        throw new IllegalStateException("다음 턴을 진행할 플레이어를 찾지 못했습니다.");
+        throw new NextTurnPlayerNotFoundException();
     }
 
     @Transactional
@@ -512,7 +528,7 @@ public class GameService {
                 case 2 -> landPrice * 0.6;
                 case 3 -> landPrice;
                 case 4 -> tile.getConstructionCost() * 2L;
-                default -> throw new IllegalArgumentException("잘못된 건물 레벨입니다.");
+                default -> throw new InvalidBuildingLevelException();
             };
 
             constructionCost += price;
@@ -618,13 +634,13 @@ public class GameService {
         GamePlayer player = gamePlayerRepository.findByGameIdAndUsername(gameId, userName);
 
         if(!game.getPhase().equals(GamePhase.WAITING_FOR_TRAIN_DESTINATION)) {
-            throw new IllegalArgumentException("게임 상태가 GamePhase.WAITING_FOR_TRAIN_DESTINATION 아닙니다.");
+            throw new GameNotWaitingForTrainDestinationException();
         }
         if(!game.getCurrentPlayerId().equals(player.getId())) {
-            throw new IllegalArgumentException("현재 접속한 플레이어는 현재 턴의 플레이어가 아닙니다.");
+            throw new AuthenticatedPlayerMismatchException();
         }
         if(!(tileId >= 0 && tileId <= 31)) {
-            throw new IllegalArgumentException("잘못된 이동경로 입니다.");
+            throw new InvalidMovementPathException();
         }
 
         player.movePlayerToLand(tileId);
@@ -693,6 +709,7 @@ public class GameService {
         }
 
         if(activeCount == 1) {
+            GameRoom gameRoom = gameRoomRepository.findById(game.getGameRoom().getId()).orElseThrow(GameRoomNotFoundException::new);
             GamePlayer gamePlayer = players.stream()
                     .filter(player -> player.getPlayerStatus().equals(PlayerStatus.ACTIVE))
                     .findFirst().orElse(null);
@@ -705,7 +722,9 @@ public class GameService {
                 GameResult save = gameResultRepository.save(gameResult);
                 game.updateFinishReason("파산");
                 game.updateGameStatus(GameStatus.FINISHED);
+
                 game.ended();
+                gameRoom.changeStatus(GameRoomStatus.FINISHED);
                 return new GameResultResponse(gamePlayer.getUser().getUsername(), save.getRank_no(), gamePlayer.getCash(), "파산 승리");
             }
         }
@@ -722,30 +741,30 @@ public class GameService {
 
     private static void valid(BuildingPurchaseRequest request, Game game, GamePlayer player, GameProperties tile) {
         if(!game.getPhase().equals(GamePhase.WAITING_FOR_SKILL_BUILD_TARGET)) {
-            throw new IllegalArgumentException("GamePhase.WAITING_FOR_SKILL_BUILD_TARGET이 아닙니다.");
+            throw new GameNotWaitingForSkillBuildTargetException();
         }
         if(player == null) {
-            throw new IllegalArgumentException("플레이어가 없습니다.");
+            throw new GamePlayerNotFoundException();
         }
         if(tile == null) {
-            throw new IllegalArgumentException("잘못된 타일 입니다.");
+            throw new InvalidTileException();
         }
         if(!game.getCurrentPlayerId().equals( player.getId())) {
-            throw new IllegalArgumentException("현재 턴인 플레이어가 아닙니다.");
+            throw new NotCurrentTurnPlayerException();
         }
         if(!tile.getPlayer().getId().equals(player.getId())) {
-            throw new IllegalArgumentException("선택한 타일의 주인이 아닙니다.");
+            throw new NotPropertyOwnerException();
         }
         if(request.getBuildingLevels().isEmpty()) {
-            throw new IllegalArgumentException("건설할 건물을 선택하지 않았습니다.");
+            throw new BuildingSelectionRequiredException();
         }
 
         for (Integer buildingLevel : request.getBuildingLevels()) {
             switch (buildingLevel){
-                case 1: if(tile.isHouse()) throw new IllegalArgumentException("이미 지어진 건물은 지을 수 없습니다."); break;
-                case 2: if(tile.isVilla()) throw new IllegalArgumentException("이미 지어진 건물은 지을 수 없습니다."); break;
-                case 3: if(tile.isApartment()) throw new IllegalArgumentException("이미 지어진 건물은 지을 수 없습니다."); break;
-                case 4: if(tile.isLandmark()) throw new IllegalArgumentException("이미 지어진 건물은 지을 수 없습니다."); break;
+                case 1: if(tile.isHouse()) throw new BuildingAlreadyConstructedException(); break;
+                case 2: if(tile.isVilla()) throw new BuildingAlreadyConstructedException(); break;
+                case 3: if(tile.isApartment()) throw new BuildingAlreadyConstructedException(); break;
+                case 4: if(tile.isLandmark()) throw new BuildingAlreadyConstructedException(); break;
             }
         }
     }

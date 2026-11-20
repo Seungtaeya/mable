@@ -24,7 +24,6 @@
                 <span th:text="${username + '님'}"></span>
             </li>
 
-            <li><button type="button">설정</button></li>
             <li>
                 <form th:action="@{/logout}" method="post">
                     <button type="submit">로그아웃</button>
@@ -33,9 +32,6 @@
         </ul>
     </nav>
 
-    <div>
-        <button type="button" onclick="clearAllRoomsByAdmin()">관리자용 방 전체삭제</button>
-    </div>
 </header>
 
 <main>
@@ -43,10 +39,10 @@
     <div>
         <h2>게임방 목록</h2>
         <input type="text" id="search-input" name="search" placeholder="방 제목을 검색하세요.">
-        <button type="button">전체</button>
-        <button type="button">대기중</button>
-        <button type="button">게임중</button>
-        <button type="button">새로고침</button>
+        <button type="button" id="all">전체</button>
+        <button type="button" id="waiting">대기중</button>
+        <button type="button" id="playGame">게임중</button>
+        <button type="button" id="refresh">새로고침</button>
         <button type="button" id="createRoom_btn">방만들기</button>
     </div>
 

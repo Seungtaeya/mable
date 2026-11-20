@@ -21,4 +21,6 @@ public interface GameResultRepository extends JpaRepository<GameResult, Long> {
         offset :offset 
 """)
     List<UserRankingResponse> findRankings(Integer offset);
+
+    List<GameResult> findAllByGame_Id(Long gameId);
 }

@@ -18,6 +18,7 @@ public class CharacterService {
 
     private final CharacterRepository characterRepository;
     private final UserCharacterRepository userCharacterRepository;
+
     public UserCharactersResponse getCharacter(Long characterId) {
 
         if(characterId == null) {

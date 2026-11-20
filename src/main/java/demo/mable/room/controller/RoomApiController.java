@@ -35,6 +35,18 @@ public class RoomApiController {
         return ResponseEntity.ok().body(rooms);
     }
 
+    @GetMapping("/rooms/waiting")
+    public ResponseEntity<List<GameRoomResponse>> getWaitingRooms() {
+        List<GameRoomResponse> waitingRooms = gameRoomService.getWaitingRooms();
+        return ResponseEntity.ok(waitingRooms);
+    }
+
+    @GetMapping("/rooms/playGame")
+    public ResponseEntity<List<GameRoomResponse>> getPlayGameRooms() {
+        List<GameRoomResponse> playGameRooms = gameRoomService.getPlayGameRooms();
+        return ResponseEntity.ok(playGameRooms);
+    }
+
     @GetMapping("/rooms/{roomId}/hostId")
     public ResponseEntity<Boolean> getGameRoomHostId(@PathVariable Long roomId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         boolean isHost = gameRoomService.isUserHost(roomId, userDetails.getUserId());

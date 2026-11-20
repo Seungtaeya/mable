@@ -14,6 +14,43 @@ createRoomBtn.addEventListener('click',() =>{
 ranking.addEventListener("click", () => {
     window.location.href = "/ranking";
 })
+
+document.getElementById("all").addEventListener("click", async () => {
+    const response = await fetch("/api/rooms");
+
+    if(!response.ok) {
+        alert("방들을 가져오는데 실패했습니다. 화면을 새로고침 해주세요.");
+        return;
+    }
+    const rooms = await response.json();
+    renderRooms(rooms);
+})
+
+document.getElementById("waiting").addEventListener("click", async () => {
+    const response = await fetch("/api/rooms/waiting");
+
+    if(!response.ok) {
+        alert("방들을 가져오는데 실패했습니다. 화면을 새로고침 해주세요.");
+        return;
+    }
+    const rooms = await response.json();
+    renderRooms(rooms);
+})
+
+document.getElementById("playGame").addEventListener("click", async () => {
+    const response = await fetch("/api/rooms/playGame");
+
+    if(!response.ok) {
+        alert("방들을 가져오는데 실패했습니다. 화면을 새로고침 해주세요.");
+        return;
+    }
+    const rooms = await response.json();
+    renderRooms(rooms);
+})
+
+document.getElementById("refresh").addEventListener("click",() => {
+
+})
 roomName.addEventListener("keydown", (key) => {
     if(key.key === "Enter" && !key.isComposing) {
         key.preventDefault();
@@ -81,7 +118,8 @@ async function joinGameRoom(roomId) {
         });
 
         if(!response.ok) {
-            alert("방에 입장하는데 실패 했습니다.");
+            const error = await response.json().catch(() => null);
+            alert(error.message);
             return;
         }
 
@@ -89,28 +127,6 @@ async function joinGameRoom(roomId) {
     } catch (error) {
         alert(error.message)
     }
-}
-
-async function clearAllRoomsByAdmin() {
-
-    try {
-        const response = await fetch("/api/admin/rooms", {
-            method: "DELETE",
-            headers: {
-                "Content-Type" : "application/json",
-                [csrfHeader]: [csrfToken]
-            }
-        });
-
-        if(!response.ok) {
-            alert("데이터 삭제중 에러가 발생했습니다. 다시 시도해주세요.");
-            return;
-        }
-
-    }catch (error) {
-        alert(error.message);
-    }
-
 }
 
 async function searchRoomName() {
@@ -127,6 +143,7 @@ async function searchRoomName() {
 }
 
 function renderRooms(rooms) {
+    roomList.innerHTML = "";
 
     rooms.forEach((room) => {
         const tr = document.createElement("tr");

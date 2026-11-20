@@ -9,9 +9,7 @@ import demo.mable.game.entity.GamePlayer;
 import demo.mable.game.entity.GameProperties;
 import demo.mable.game.entity.TurnOrder;
 import demo.mable.game.enums.GamePhase;
-import demo.mable.game.exception.GameNotFoundException;
-import demo.mable.game.exception.GamePhaseException;
-import demo.mable.game.exception.GamePlayerNotFoundException;
+import demo.mable.game.exception.*;
 import demo.mable.game.repository.GamePlayerRepository;
 import demo.mable.game.repository.GamePropertiesRepository;
 import demo.mable.game.repository.GameRepository;
@@ -39,8 +37,6 @@ public class GamePlayerService {
     private final UserRepository userRepository;
     private final GamePropertiesRepository gamePropertiesRepository;
     private final UserSelectLuckyItemRepository userSelectLuckyItemRepository;
-
-    private final SimpMessagingTemplate simpMessagingTemplate;
 
     public List<GamePlayerResponse> getPlayers(Long gameId) {
         return gamePlayerRepository.findPlayerSummariesByGameId(gameId);
@@ -75,10 +71,6 @@ public class GamePlayerService {
         return GamePlayerResponse.from(gamePlayer);
     }
 
-    // 턴을 정하는 카드를 다 선택 했는지 보고, 게임 상태를 검사 아직 턴을 정하는 중이면
-    // 첫 턴을 정하는 메서드 호출해서 첫 턴을 정하고 시계방향으로 턴을 설정 하도록 했음
-    // 이제 화면에서 모든 플레이어가 턴을 정하는 카드를 선택 했다는걸 서버에 알려주도록만 하면 됨
-    // 그리고 나서 턴을 기준으로 플레이어들이 주사위를 던지는 코드를 작성하면 됨
     @Transactional
     public Integer determineTurnOrderIfAllPlayersSelected(Long gameId, String userName, int turnOrder) {
         List<GamePlayer> players = gamePlayerRepository.findByGame_Id(gameId);
@@ -100,7 +92,7 @@ public class GamePlayerService {
         Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
 
         if(!game.getPhase().equals(GamePhase.TURN_ORDER_SELECTING)) {
-            throw new GamePhaseException("이미 턴 확정 했습니다.");
+            throw new GamePhaseException();
         }
 
         List<TurnOrder> turn = turnOrderRepo.findByGame_Id(gameId);
@@ -145,7 +137,7 @@ public class GamePlayerService {
 
         boolean existsByGameIdAndUsername = turnOrderRepo.existsByGame_IdAndUser_Username(gameId, userName);
         if(existsByGameIdAndUsername) {
-            throw new IllegalArgumentException("이미 카드를 선택 했습니다.");
+            throw new TurnOrderCardAlreadySelectedException();
         }
 
         TurnOrder turn = new TurnOrder(turnOrder);
@@ -161,12 +153,12 @@ public class GamePlayerService {
         GameProperties tile = gamePropertiesRepository.findByGameIdAndTileId(gameId, tileId);
 
         if(player.getPosition() != tileId) {
-            throw new IllegalArgumentException("플레이어가 타일 위에 없습니다");
+            throw new PlayerNotOnTileException();
         }
 
         if(tile.isLandmark()) {
 
-            throw new IllegalArgumentException("랜드마크는 인수 불가능");
+            throw new LandmarkAcquisitionNotAllowedException();
         }
         return player.getId();
     }

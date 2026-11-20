@@ -1,6 +1,7 @@
 package demo.mable.room.service;
 
 import demo.mable.chat.repository.MessageRepository;
+import demo.mable.game.enums.GameStatus;
 import demo.mable.game.repository.GamePlayerRepository;
 import demo.mable.game.repository.GameRepository;
 import demo.mable.game.repository.TurnOrderRepo;
@@ -145,8 +146,21 @@ public class GameRoomService {
     }
 
     public List<GameRoomResponse> getRooms() {
-//        List<GameRoom> rooms = gameRoomRepository.findAllByStatus(GameRoomStatus.WAITING);
         List<GameRoom> rooms = gameRoomRepository.findAllOrderByDesc();
+        return rooms.stream()
+                .map(GameRoomResponse::from)
+                .toList();
+    }
+
+    public List<GameRoomResponse> getWaitingRooms() {
+        List<GameRoom> rooms = gameRoomRepository.findAllByStatus(GameRoomStatus.WAITING);
+        return rooms.stream()
+                .map(GameRoomResponse::from)
+                .toList();
+    }
+
+    public List<GameRoomResponse> getPlayGameRooms() {
+        List<GameRoom> rooms = gameRoomRepository.findAllByStatus(GameRoomStatus.PLAYING);
         return rooms.stream()
                 .map(GameRoomResponse::from)
                 .toList();

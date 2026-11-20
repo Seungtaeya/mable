@@ -6,6 +6,10 @@ import demo.mable.game.enums.GamePhase;
 import demo.mable.game.enums.GameStatus;
 import demo.mable.game.enums.MapCode;
 import demo.mable.game.enums.PlayerStatus;
+import demo.mable.game.exception.GameRoomNotWaitingException;
+import demo.mable.game.exception.InsufficientPlayersException;
+import demo.mable.game.exception.NotAllPlayersReadyException;
+import demo.mable.game.exception.NotRoomHostException;
 import demo.mable.game.repository.GamePlayerRepository;
 import demo.mable.game.repository.GameRepository;
 import demo.mable.room.entity.GameRoom;
@@ -37,19 +41,19 @@ public class GameStartService {
         List<RoomPlayer> players = roomPlayerRepository.findByRoomId(roomId);
 
         if(!gameRoom.getStatus().equals(GameRoomStatus.WAITING)) {
-            throw new IllegalStateException("게임 시작은 대기방일때만 가능합니다.");
+            throw new GameRoomNotWaitingException();
         }
 
         if(!players.stream().allMatch(RoomPlayer::isGameReady)) {
-            throw new IllegalStateException("모든 플레이어가 레디해야 게임을 시작 할 수 있습니다.");
+            throw new NotAllPlayersReadyException();
         }
 
         if(!gameRoom.isHost(hostUserId)) {
-            throw new IllegalStateException("호스트가 다릅니다.");
+            throw new NotRoomHostException();
         }
-//        if(gameRoom.getPlayerCount() <= 1) {
-//            throw new IllegalStateException("최소 인원수가 맞지 않습니다.");
-//        }
+        if(gameRoom.getPlayerCount() <= 1) {
+            throw new InsufficientPlayersException();
+        }
 
         gameRoom.changeStatus(GameRoomStatus.PLAYING);
 

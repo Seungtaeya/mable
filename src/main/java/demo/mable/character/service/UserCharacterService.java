@@ -42,12 +42,10 @@ public class UserCharacterService {
     }
     public List<UserCharactersResponse> getCharactersByUserId(Long userId) {
         List<UserCharacter> UserCharacters = userCharacterRepository.findByUserIdOrderByCharacterRank(userId);
-//        List<Character> characters = new ArrayList<>();
         for(UserCharacter userCharacter : UserCharacters) {
             if(!userCharacter.getUser().getId().equals(userId)){
                 throw new UserIdMisMatchException();
             }
-//            characters.add(userCharacter.getCharacter());
         }
 
         return UserCharacters.stream().map(UserCharactersResponse::from).toList();
@@ -66,10 +64,10 @@ public class UserCharacterService {
         }
 
         if(userId == null) {
-            throw new IllegalArgumentException("userId는 null이여선 안됩니다.");
+            throw new UserIdRequiredException();
         }
         if(characterId == null) {
-            throw new IllegalArgumentException("characterId는 null이여선 안됩니다.");
+            throw new CharacterIdRequiredException();
         }
 
         List<UserCharacter> userCharacters = userCharacterRepository.findByUserIdOrderByCharacterRank(userId);
@@ -91,7 +89,6 @@ public class UserCharacterService {
 
     @Transactional
     public void selectCharacterChange(Long userId, Long userCharacterId) {
-        System.out.println("characterId = " + userCharacterId);
         UserSelectedCharacter usc = userSelecteCharacterRespository.findByUserId(userId).orElseThrow(UserSelectedCharacterNotFoundException::new);
         usc.getUserCharacter().statusChange(UserCharacterStatus.ACTIVE);
         List<UserCharacter> ownedCharacters = userCharacterRepository.findByUser_Id(userId);
@@ -101,9 +98,7 @@ public class UserCharacterService {
         if(!isCharacter) {
             throw new CharacterCardNotOwnedByUserException();
         }
-//        if (!ownedCharacters.get(idx).getCharacter().getId().equals(characterId)) {
-//            throw new IllegalArgumentException("캐릭터 리스트에서 선택한 캐릭터와 요청보낸 캐릭터 id가 일치하지 않습니다.");
-//        }
+
         UserCharacter userCharacter = ownedCharacters.stream()
                 .filter(usch -> usch.getId().equals(userCharacterId))
                 .findFirst()
@@ -155,13 +150,13 @@ public class UserCharacterService {
     @Transactional
     public CharacterSynthesisResponse synthesizeCharacter(Long userId, CharacterSynthesisRequest request) {
         if(request == null) {
-            throw new NullPointerException("합성에 필요한 데이터가 없습니다.");
+            throw new MissingCharacterSynthesisDataException();
         }
         if(request.getLeftCharacterId() == null || request.getRightCharacterId() == null) {
-            throw new IllegalArgumentException("합성에 필요한 캐릭터는 2개입니다.");
+            throw new InvalidSynthesisMaterialCountException();
         }
         if(request.getLeftCharacterId().equals(request.getRightCharacterId())) {
-            throw new IllegalArgumentException("같은 캐릭터로 합성은 불가능 합니디.");
+            throw new DuplicateSynthesisMaterialException();
         }
 
         List<UserCharacter> findUserCharacters = userCharacterRepository.findUserCharactersByCharactersId(userId,request.getLeftCharacterId(), request.getRightCharacterId());
@@ -188,7 +183,7 @@ public class UserCharacterService {
                 characterByRank = characterRepository.findCharacterByRank("S+");
                 break;
             default:
-                throw new IllegalArgumentException("UserCharacterService: synthesizeCharacter : Exception ");
+                throw new UnsupportedCharacterRankException();
         }
 
         User user = findUserCharacters.getFirst().getUser();
