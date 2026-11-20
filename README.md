@@ -62,5 +62,7 @@
 
 보드와 경기별 소유상태 분리 : 같은 맵이라도 매 판마다 타일의 주인 건설 상태가 달라지기 때문에 game_properties에 게임 타일 기준으로 건물과 소유자를 저장했습니다.   
 
-진행과 경기 종료         : games와 game_players는 경기 진행에 사용되고 game_results는 종료결과와 누저 승수에 사용하도록 설정했습니다. 유니크 제약조건을 game_id, user_id에 걸어 게임 결과가 중복 저장되지 않게 했습니다.
+진행과 경기 종료         : games와 game_players는 경기 진행에 사용되고 game_results는 종료결과와 누저 승수에 사용하도록 설정했습니다. 유니크 제약조건을 game_id, user_id에 걸어 게임 결과가 중복 저장되지 않게 했습니다.   
+<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/77acc7f2-58c5-4724-b896-621cb9148681" />
+
 <img width="2134" height="1686" alt="image" src="https://github.com/user-attachments/assets/78aaf258-d207-4642-99b1-b9a763423ce5" />
