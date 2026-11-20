@@ -14,7 +14,7 @@
 - 실시간통신:  Spring WebSocket, STOMP    
 - 프론트엔드:  thymeleaf, HTML, CSS, JavaScript
 - 데이터베이스:  MySQL
-
+- aws : 테스트중
  ## 주요 기능
 
  로비, 대기방|  :방 생성과 입장, 실시간 채팅, 준비 상태확인, 방장의 게임시작      
