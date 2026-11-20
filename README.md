@@ -65,4 +65,10 @@
 진행과 경기 종료         : games와 game_players는 경기 진행에 사용되고 game_results는 종료결과와 누저 승수에 사용하도록 설정했습니다. 유니크 제약조건을 game_id, user_id에 걸어 게임 결과가 중복 저장되지 않게 했습니다.   
 <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/77acc7f2-58c5-4724-b896-621cb9148681" />
 
-<img width="2134" height="1686" alt="image" src="https://github.com/user-attachments/assets/78aaf258-d207-4642-99b1-b9a763423ce5" />
+<img width="2134" height="1686" alt="image" src="https://github.com/user-attachments/assets/78aaf258-d207-4642-99b1-b9a763423ce5" />  
+  
+  
+   
+본게임으로 들어와서 플레이어의 캐릭터 카드를 선택하면 사용중인 캐릭터, 아이템 을 볼 수 있도록 화면을 만들었습니다.  
+데이터들을 가져올땐 조인으로 먼저 플레이어 정보, 유저, 선택한 캐릭터, 캐릭터로 해서 캐릭터 이미지를 가져오도록 했으며, 스킬은 캐릭터, 스킬 테이블을 조인해서 찾았습니다. 아이템도 동일한 방법으로 가져왔습니다.  
+<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/c156cce4-3269-4e04-b793-0b56c8a60088" />
