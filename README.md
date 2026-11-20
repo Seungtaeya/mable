@@ -15,6 +15,15 @@
 - 프론트엔드:  thymeleaf, HTML, CSS, JavaScript
 - 데이터베이스:  MySQL
 - aws : 테스트중
+
+
+## 데이터베이스 설계
+유저와 게임 플레이어의 분리 : users에는 게임 계정을 저장하고 game_player에는 게임에서 사용되는 보유머니 위치 턴 순서를 저장했습니다.  
+
+보드와 경기별 소유상태 분리 : 같은 맵이라도 매 판마다 타일의 주인 건설 상태가 달라지기 때문에 game_properties에 게임 타일 기준으로 건물과 소유자를 저장했습니다.   
+
+<img width="2134" height="1686" alt="image" src="https://github.com/user-attachments/assets/78aaf258-d207-4642-99b1-b9a763423ce5" />  
+
  ## 주요 기능
 
  로비, 대기방  :방 생성과 입장, 실시간 채팅, 준비 상태확인, 방장의 게임시작      
@@ -60,13 +69,6 @@ game_results는 원본 행을 추가로 읽지 않고 인덱스에서 필요한 
 <img src="./readme-media/index.png" alt="인덱스 처리 시간" width="500">
 <img width="500"  alt="image" src="https://github.com/user-attachments/assets/0b95ec03-2037-410b-97aa-18a11359c69c" />
 <img width="2026" height="118" alt="image" src="https://github.com/user-attachments/assets/0659c1fe-5ab3-4d72-a40f-cc384761b42b" />
-
-## 데이터베이스 설계
-유저와 게임 플레이어의 분리 : users에는 게임 계정을 저장하고 game_player에는 게임에서 사용되는 보유머니 위치 턴 순서를 저장했습니다.  
-
-보드와 경기별 소유상태 분리 : 같은 맵이라도 매 판마다 타일의 주인 건설 상태가 달라지기 때문에 game_properties에 게임 타일 기준으로 건물과 소유자를 저장했습니다.   
-
-<img width="2134" height="1686" alt="image" src="https://github.com/user-attachments/assets/78aaf258-d207-4642-99b1-b9a763423ce5" />  
 
 ## 경기 결과
 
