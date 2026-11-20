@@ -3,19 +3,21 @@
  학창시절 모두의 마블을 잼있게 플레이한 기억이 있어 만들어본 프로젝트 입니다.       
  여러 플레이어가 같은 방에서 주사위를 굴리며, 땅을 구매하거나, 건물을 지으며 다른 플레이어의 땅에 도착하면 통행료를 내도록 만들었습니다.      
  
- 이 프로젝트는 각 플레이어가 같은 게임 상태를 보도록 만들었습니다. 주사위 결과, 말 위치, 건물 소유권, 통행료, 다음 차례는 서버에서 결정 하며 브라우저는 웹소켓으로 받은 결과만 화면에 반영합나디.                     
+ 이 프로젝트는 각 플레이어가 같은 게임 상태를 보도록 만들었습니다. 주사위 결과, 말 위치, 건물 소유권, 통행료, 다음 차례는 서버에서 결정 하며 브라우저는 웹소켓으로 받은 결과만 화면에 반영합니다.                     
 
 
 <img src="./readme-media/01-first-roll.gif" alt="첫 주사위와 말 이동" width="600">
- ## 기술 스택
-백엔드:  java21, SpringBoot, SpringSecurity, Spring Data Jpa     
-실시간통신:  Spring WebSocket, STOMP    
-프론트엔드:  thymeleaf, HTML, CSS, JavaScript
-데이터베이스:  MySQL
+  
+## 기술 스택  
+
+- 백엔드:  java21, SpringBoot, SpringSecurity, Spring Data Jpa     
+- 실시간통신:  Spring WebSocket, STOMP    
+- 프론트엔드:  thymeleaf, HTML, CSS, JavaScript
+- 데이터베이스:  MySQL
 
  ## 주요 기능
 
- 로비, 대기방|  :방 생성과 입장, 실시간 채팅, 준비 상태확인, 발장의 게임시작      
+ 로비, 대기방|  :방 생성과 입장, 실시간 채팅, 준비 상태확인, 방장의 게임시작      
 
  랭킹         : 가입된 유저중 게임 승리 횟수를 랭킹으로 표시
     
@@ -27,14 +29,14 @@
    
  캐릭터, 아이템 : 캐릭터 카드 뽑기, 장착, 합성, 행운 아이템 뽑기, 장착, 삭제, 스킬 발동 시 아이템 이미지 표시
      
- 게임 종료    :  통행료를 감동 못 한 플레이어는 파산 처리, 마기막 한 명이 남으면 게임 종료 및 결과 표시   
+ 게임 종료    :  통행료를 감당하지 못 한 플레이어는 파산 처리, 마지막 한 명이 남으면 게임 종료 및 결과 표시   
     
 
  ## 구현에서 신경 쓴 부분
 
  #### 착지 결과를 처리 한 다음 차례 진행
  말이 주사위 값 만큼 움직였다고 턴이 끝난게 아닙니다. 빈 땅이면 건물 건설, 내땅이고 건물 3개가 다 건설 됐다면 랜드마크 건설, 상대 땅이면 통행료 정산 후 인수 선택을 해야 했습니다.     
- GamePahse로 주사위 대기, 건설 대기, 통행료 대기, 인수 대기 등을 구분하고, 주사위와 통행료 같은 주요 요청에는 현재 플레이어 턴과 요청한 플레이어의 차례를 비교 하도록 했으며,
+ GamePhase로 주사위 대기, 건설 대기, 통행료 대기, 인수 대기 등을 구분하고, 주사위와 통행료 같은 주요 요청에는 현재 플레이어 턴과 요청한 플레이어의 차례를 비교 하도록 했으며,
  플레이어 말이 타일에 도착후 행동을 다 하면 그때 주사위가 더블 여부에 따라서 같은 플레이어에게 추가로 주사위를 한 번 더 던지도록 했습니다.    
 
  #### 스킬마다 다른 발동 시점과 효과
@@ -55,24 +57,29 @@
 또한 mySql에서 EXPLAIN으로 실행계획 확인 key에는 직접 만든 인덱스가 들어가있는걸 확인 Extra에는 Using index가 들어가있는걸 확인 game_results는 원본 행을 추가로 읽지 않고 인덱스에서 필요한 값을 조회 하는걸 검증 했습니다.  
 <img src="./readme-media/index.png" alt="인덱스 처리 시간" width="500">
 <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/0b95ec03-2037-410b-97aa-18a11359c69c" />
-<img src="./readme-media/04-character-change-and-synthesis.gif" alt="장착 캐릭터 변경과 카드 두 장 합성 시연" width="600">
+<img width="2026" height="118" alt="image" src="https://github.com/user-attachments/assets/0659c1fe-5ab3-4d72-a40f-cc384761b42b" />
 
 ## 데이터베이스 설계
 유저와 게임 플레이어의 분리 : users에는 게임 계정을 저장하고 game_player에는 게임에서 사용되는 보유머니 위치 턴 순서를 저장했습니다.  
 
 보드와 경기별 소유상태 분리 : 같은 맵이라도 매 판마다 타일의 주인 건설 상태가 달라지기 때문에 game_properties에 게임 타일 기준으로 건물과 소유자를 저장했습니다.   
 
-진행과 경기 종료         : games와 game_players는 경기 진행에 사용되고 game_results는 종료결과와 누저 승수에 사용하도록 설정했습니다. 유니크 제약조건을 game_id, user_id에 걸어 게임 결과가 중복 저장되지 않게 했습니다.   
-<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/77acc7f2-58c5-4724-b896-621cb9148681" />
-
 <img width="2134" height="1686" alt="image" src="https://github.com/user-attachments/assets/78aaf258-d207-4642-99b1-b9a763423ce5" />  
+
+## 경기 결과
+
+진행과 경기 종료         : games와 game_players는 경기 진행에 사용되고 game_results는 종료결과와 누적 승수에 사용하도록 설정했습니다. 유니크 제약조건을 game_id, user_id에 걸어 게임 결과가 중복 저장되지 않게 했습니다.   
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/77acc7f2-58c5-4724-b896-621cb9148681" />
   
-  
-   
+## 플레이어 상세 조회
+
 본게임으로 들어와서 플레이어의 캐릭터 카드를 선택하면 사용중인 캐릭터, 아이템 을 볼 수 있도록 화면을 만들었습니다.  
 데이터들을 가져올땐 조인으로 먼저 플레이어 정보, 유저, 선택한 캐릭터, 캐릭터로 해서 캐릭터 이미지를 가져오도록 했으며, 스킬은 캐릭터, 스킬 테이블을 조인해서 찾았습니다. 아이템도 동일한 방법으로 가져왔습니다.  
-<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/c156cce4-3269-4e04-b793-0b56c8a60088" />
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/c156cce4-3269-4e04-b793-0b56c8a60088" />
 
 ## 로비 화면  
 <img src="./readme-media/05-lobby-chat-search-filters.gif"
      alt="로비 채팅, 방 제목 검색 및 상태별 필터 시연" width="800">
+
+## 캐릭터 장착, 합성 
+<img src="./readme-media/04-character-change-and-synthesis.gif" alt="장착 캐릭터 변경과 카드 두 장 합성 시연" width="600">
